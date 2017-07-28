@@ -176,13 +176,25 @@ class Application(tk.Frame):
 			datapoints[i].label = kmeans.labels_[i]
 			self.draw_datapoint(datapoints[i])
 
+	#TODO: MOVE OUT
+	#Gets two circles [[x,y], radius] and return the Jaccard index A^B/A
+	def jaccard_overlap(self, c1, c2):
+		inter = self.intersection_area(c1, c2)
+		return inter / ((c1[1] * c1[1] * np.pi) + (c2[1] * c2[1] * np.pi) - inter)
+	
+	#TODO: MOVE OUT
+	#Gets two circles [[x,y], radius] and return the MONIC index: A^B/AUB
+	def monic_overlap(self, c1, c2):
+		inter = self.intersection_area(c1, c2)
+		return inter / (c1[1] * c1[1] * np.pi)
 
+	#TODO: MOVE OUT
 	#Based on this: https://stackoverflow.com/questions/4247889/area-of-intersection-between-two-circles
 	#and this: http://mathworld.wolfram.com/Circle-CircleIntersection.html
 	#this just calculates between circles!
-	def intersection_area(self, c0, r0, c1, r1):
-		x0, y0 = c0[0], c0[1]
-		x1, y1 = c1[0], c1[1]
+	def intersection_area(self, c0, c1):
+		x0, y0, r0 = c0[0][0], c0[0][1], c0[1]
+		x1, y1, r1 = c1[0][0], c1[0][1], c1[1]
 
 		rr0 = r0 * r0
 		rr1 = r1 * r1
@@ -212,7 +224,6 @@ class Application(tk.Frame):
 
 	def match_next(self):
 		#print(timeline[self.timeline_position], timeline[self.timeline_position+1])
-
 		self.get_matches(timeline[self.timeline_position], timeline[self.timeline_position+1])
 
 	#Given two sets of clusterings, prints the matches between a pair A,B
@@ -235,7 +246,8 @@ class Application(tk.Frame):
 
 		for i in clusters_a:
 			for j in clusters_b:
-				print (self.intersection_area(i[0], i[1], j[0], j[1]))
+				print(self.monic_overlap(i,j))
+				print(self.jaccard_overlap(i,j))
 
 	def get_clustering_data(self):
 		return [i.position for i in datapoints]
