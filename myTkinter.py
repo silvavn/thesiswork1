@@ -133,9 +133,9 @@ class Application(tk.Frame):
 	def new_window(self):
 		return KmeansScreen(tk.Toplevel(self))
 
-	def min_bound_circle(self, labels, target):
-		xpos = [datapoints[j].position[0] for j in range(len(labels)) if labels[j] == target]
-		ypos = [datapoints[j].position[1] for j in range(len(labels)) if labels[j] == target]
+	def min_bound_circle(self, cluster, labels, target):
+		xpos = [cluster[j].position[0] for j in range(len(labels)) if labels[j] == target]
+		ypos = [cluster[j].position[1] for j in range(len(labels)) if labels[j] == target]
 
 		xavg = np.mean(xpos)
 		yavg = np.mean(ypos)
@@ -159,7 +159,7 @@ class Application(tk.Frame):
 	def run_DBSCAN(self):
 		dbscan = DBSCAN(eps=50, n_jobs=-1).fit(self.get_clustering_data())
 		for i in np.unique(dbscan.labels_):
-			c = self.min_bound_circle(dbscan.labels_, i)
+			c = self.min_bound_circle(datapoints, dbscan.labels_, i)
 			self.draw_bounding_circle(c[0], c[1])
 
 		for i in range(len(dbscan.labels_)):
@@ -169,7 +169,7 @@ class Application(tk.Frame):
 	def run_Kmeans(self):
 		kmeans = KMeans(n_clusters=int(self.kmeans_config.num_clusters.get()), random_state=0, n_jobs=int(self.kmeans_config.num_jobs.get())).fit(self.get_clustering_data())
 		for i in np.unique(kmeans.labels_):
-			c = self.min_bound_circle(kmeans.labels_, i)
+			c = self.min_bound_circle(datapoints, kmeans.labels_, i)
 			self.draw_bounding_circle(c[0], c[1])
 		
 		for i in range(len(kmeans.labels_)):
@@ -195,11 +195,11 @@ class Application(tk.Frame):
 		#Circle1 is completely inside circle0
 		elif d <= np.absolute(r0 - r1) and r0 >= r1: 
 			#print('r0')
-			return np.pi * rr0 / (np.pi * rr0)
+			return np.pi * rr1 #/ (np.pi * rr0)
 		#Circle0 is completely inside circle1
 		elif d <= np.absolute(r0 - r1) and r0 < r1: 
 			#print('r1')
-			return np.pi * rr0 / (np.pi * rr1)
+			return np.pi * rr0 #/ (np.pi * rr1)
 		else:
 			#print('else')
 			phi = (np.arccos((rr0 + (d * d) - rr1) / (2 * r0 * d))) * 2
@@ -208,18 +208,30 @@ class Application(tk.Frame):
 			area2 = 0.5 * phi * rr0 - 0.5 * rr0 * np.sin(phi)
 			overlap = area1 + area2
 			total = (np.pi * rr0 + np.pi * rr1) - overlap
-			return overlap/total
+			return overlap #/total
 
 	def match_next(self):
+		#print(timeline[self.timeline_position], timeline[self.timeline_position+1])
+
 		self.get_matches(timeline[self.timeline_position], timeline[self.timeline_position+1])
 
 	#Given two sets of clusterings, prints the matches between a pair A,B
 	def get_matches(self, set1, set2):
+		'''pos = [i.position for i in set1]
+		print(np.mean([i[0] for i in pos]))
+		print(np.mean([i[1] for i in pos]))
+
+		pos = [i.position for i in set2]
+		print(np.mean([i[0] for i in pos]))
+		print(np.mean([i[1] for i in pos]))'''
+
 		labels_a = [i.label for i in set1]
 		labels_b = [i.label for i in set2]
-		get_clusters = lambda x: [self.min_bound_circle(x, i) for i in np.unique(x)]
-		clusters_a = get_clusters(labels_a)
-		clusters_b = get_clusters(labels_b)
+
+		get_clusters = lambda x, y: [self.min_bound_circle(x, y, i) for i in np.unique(y)]
+		clusters_a = get_clusters(set1, labels_a)
+		clusters_b = get_clusters(set2, labels_b)
+		print(clusters_a,clusters_b)
 
 		for i in clusters_a:
 			for j in clusters_b:
@@ -301,7 +313,7 @@ class Application(tk.Frame):
 		if len(labels_) > 0 and labels_[0] != None:
 			for i in np.unique(labels_):
 				
-				c = self.min_bound_circle(labels_, i)
+				c = self.min_bound_circle(datapoints, labels_, i)
 				self.draw_bounding_circle(c[0], c[1])
 
 		for i in datapoints:
