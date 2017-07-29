@@ -67,7 +67,7 @@ class MONICScreen(tk.Frame):
 
 		self.split = StringVar(self)
 		self.split_entry = tk.Entry(self, textvariable=self.split)
-		self.split_entry.insert(0, "0.2")
+		self.split_entry.insert(0, "0.1")
 		self.split_entry.grid(row=1,column=1)
 
 	def close_windows(self):

@@ -13,6 +13,7 @@ import numpy as np
 root = tk.Tk()
 #TODO
 #Fix a bug where if you dont press next or prev it wont save the current clustering space
+#Save canvas as image
 class Application(tk.Frame):
 	def __init__(self, master=None):
 		tk.Frame.__init__(self, master)
@@ -74,15 +75,56 @@ class Application(tk.Frame):
 
 		self.monic_config = MONICScreen(tk.Toplevel(self))
 
+	def detect_external_transitions(self, comparisons, timestep, tmatch, tsplit):
+		match_pairs = {}
+		match_splits = {}
+		match_merge = {}
+		match_disappears = []
+
+		for c in comparisons:
+			if c[2] >= tmatch:
+				try:
+					match_pairs[c[0]].append(c[1])
+				except:
+					match_pairs[c[0]] = [c[1]]
+
+			if c[2] >= tmatch:
+				try:
+					match_merge[c[1]].append(c[0])
+				except:
+					match_merge[c[1]] = [c[0]]
+
+			if c[2] >= tsplit:
+				try:
+					match_splits[c[0]].append(c[1])
+				except:
+					match_splits[c[0]] = [c[1]]
+			if c[0] not in match_pairs and c[0] not in match_splits: # and c[0] not in match_merge:
+				match_disappears.append(c[0])
+
+		print("At timestep {} to {}".format(timestep, timestep+1))
+		for key, value in match_pairs.items():
+			if len(value) == 1 and len(match_merge[value[0]]) == 1: print("Cluster {} matches with clusters {}".format(key, value))
+			elif len(match_merge[value[0]]) > 1: print("Clusters {} are absorbed by cluster {}".format(match_merge[value[0]], value))
+
+		for key, value in match_splits.items():
+			if len(value) > 1: print("Cluster {} splits into clusters {}".format(key, value))
+
+		if len(match_disappears) > 0: print("Clusters {} disappeared :(".format(match_disappears))
+
+		#print(match_pairs)
+		#print(match_merge)
+
+		#print(match_pairs)
+		#print(splits)
+
 	def run_scan_timeline(self):
 		overlaps = scan_timeline()
 		print(overlaps)
 
-		for comparisons in overlaps:
-			for j in comparisons:
-				print(j)
-				if j[2] >= float(self.monic_config.match.get()):
-					print('match!')
+		for i in range(len(overlaps)):
+			#print (overlaps[i])
+			self.detect_external_transitions(overlaps[i], i, float(self.monic_config.match.get()), float(self.monic_config.split.get()))
 			'''if overlaps[i][2] > self.monic_config.match.get():
 				print("At clusterings {} and {}, clusters {} and {} match!".format(i,i+1, overlaps[i][0], overlaps[i][1]))'''
 
@@ -135,7 +177,7 @@ class Application(tk.Frame):
 		global datapoints, timeline
 
 		#a = askstring("File name", "Insert the name of the DATAPOINTS file without extension" )
-		a = 'test'
+		a = 'all'
 		if a != None: 
 			MyUtils.timeline = timeline = load(a)
 			#print(timeline == MyUtils.timeline)
