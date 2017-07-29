@@ -1,80 +1,18 @@
 #!/usr/bin/env python	  
 import tkinter as tk
+from Datapoint import *
 from tkinter.simpledialog import *
 from sklearn.cluster import KMeans
 from sklearn.cluster import DBSCAN
 from KmeansScreen import *
 from MyUtils import *
+import MyUtils
 
 import numpy as np
 
-#colors
-WHITE = '#fff'
-BLACK = '#000'
-
-RED = '#f00'
-GREEN = '#0f0'
-BLUE = '#00f'
-
-YELLOW = '#ff0'
-CYAN = '#0ff'
-MAGENTA = '#f0f'
-
-GRAY = '#aaa'
-
-
-datapoint_radius = 3
-
-#canvas declaration
-canvas_width = 800
-canvas_height = 800
-
-#stores a timeline of clustering spaces
-timeline = []
-
-#array of datapoints
-datapoints = []
-
 root = tk.Tk()
-
-class Datapoint:
-	def __init__(self, position, label=None):
-		self.position = position
-		self.label = label
-
-	@property
-	def position(self):
-		return self.__position
-
-	@position.setter
-	def position(self, position):
-		self.__position = position
-
-		if self.__position[0] < 0:
-			self.__position[0] = 0
-		elif self.__position[0] > canvas_width:
-			self.__position[0] = canvas_width
-		
-		if self.__position[1] < 0:
-			self.__position[1] = 0
-		elif self.__position[1] > canvas_height:
-			self.__position[1] = canvas_height
-	
-	def get_fill(self):
-		colors = [GREEN,BLUE,YELLOW, WHITE, CYAN, MAGENTA, GRAY]
-		try:
-			return colors[self.label]
-		except:
-			return RED
-
-	def draw(self, canvas):
-		#print(self.position)
-		canvas.create_oval(int(self.position[0])-datapoint_radius, 
-			self.position[1]-datapoint_radius, 
-			self.position[0]+datapoint_radius, 
-			self.position[1]+datapoint_radius, 
-			fill=self.get_fill())
-
+#TODO
+#Fix a bug where if you dont press next or prev it wont save the current clustering space
 class Application(tk.Frame):
 	def __init__(self, master=None):
 		tk.Frame.__init__(self, master)
@@ -102,11 +40,11 @@ class Application(tk.Frame):
 		self.canvas.pack(anchor=W)
 		#self.canvas.grid()
 
-		'''self.savebtn = tk.Button(self, text='Save', command=self.on_save_button)
+		self.savebtn = tk.Button(self, text='Save', command=self.on_save_button)
 		self.savebtn.pack(side=LEFT)
 
-		self.loadbtn = tk.Button(self, text='Load Datapoints', command=self.on_load_datapoints)
-		self.loadbtn.pack(side=LEFT)'''			
+		self.loadbtn = tk.Button(self, text='Load', command=self.on_load_datapoints)
+		self.loadbtn.pack(side=LEFT)
 
 		self.click_state = StringVar(self)
 		self.click_state.set("Click")
@@ -119,11 +57,11 @@ class Application(tk.Frame):
 		self.rightButton = tk.Button(self, text='next',command=self.next_button)			
 		self.rightButton.pack(side=LEFT)
 
-		self.clusteringButton = tk.Button(self, text='Run Clustering',command=self.run_clustering)		
-		self.clusteringButton.pack(side=LEFT)
-
 		self.matchButton = tk.Button(self, text='Match to Next',command=self.match_next)		
 		self.matchButton.pack(side=LEFT)
+
+		self.matchAllButton = tk.Button(self, text='Match All',command=self.run_scan_timeline)		
+		self.matchAllButton.pack(side=LEFT)
 
 		self.clustering_state = StringVar(self)
 		self.clustering_state.set("Kmeans")
@@ -131,17 +69,22 @@ class Application(tk.Frame):
 		self.clusteringmenu = OptionMenu(self, self.clustering_state, "Kmeans", "DBSCAN")
 		self.clusteringmenu.pack(side=LEFT)
 
+		self.clusteringButton = tk.Button(self, text='Run Clustering',command=self.run_clustering)		
+		self.clusteringButton.pack(side=LEFT)
+
 		self.monic_config = MONICScreen(tk.Toplevel(self))
 
-	def min_bound_circle(self, cluster, labels, target):
-		xpos = [cluster[j].position[0] for j in range(len(labels)) if labels[j] == target]
-		ypos = [cluster[j].position[1] for j in range(len(labels)) if labels[j] == target]
+	def run_scan_timeline(self):
+		overlaps = scan_timeline()
+		print(overlaps)
 
-		xavg = np.mean(xpos)
-		yavg = np.mean(ypos)
-
-		radius = np.max([np.linalg.norm(np.array([xavg, yavg])-np.array([xpos[i], ypos[i]])) for i in range(len(xpos))])
-		return [[xavg, yavg], radius]
+		for comparisons in overlaps:
+			for j in comparisons:
+				print(j)
+				if j[2] >= float(self.monic_config.match.get()):
+					print('match!')
+			'''if overlaps[i][2] > self.monic_config.match.get():
+				print("At clusterings {} and {}, clusters {} and {} match!".format(i,i+1, overlaps[i][0], overlaps[i][1]))'''
 
 	def draw_bounding_circle(self, position, radius, c=WHITE):
 		self.canvas.create_oval(position[0]-radius, 
@@ -159,7 +102,7 @@ class Application(tk.Frame):
 	def run_DBSCAN(self):
 		dbscan = DBSCAN(eps=50, n_jobs=-1).fit(self.get_clustering_data())
 		for i in np.unique(dbscan.labels_):
-			c = self.min_bound_circle(datapoints, dbscan.labels_, i)
+			c = min_bound_circle(datapoints, dbscan.labels_, i)
 			self.draw_bounding_circle(c[0], c[1])
 
 		for i in range(len(dbscan.labels_)):
@@ -169,7 +112,7 @@ class Application(tk.Frame):
 	def run_Kmeans(self):
 		kmeans = KMeans(n_clusters=int(self.kmeans_config.num_clusters.get()), random_state=0, n_jobs=int(self.kmeans_config.num_jobs.get())).fit(self.get_clustering_data())
 		for i in np.unique(kmeans.labels_):
-			c = self.min_bound_circle(datapoints, kmeans.labels_, i)
+			c = min_bound_circle(datapoints, kmeans.labels_, i)
 			self.draw_bounding_circle(c[0], c[1])
 		
 		for i in range(len(kmeans.labels_)):
@@ -178,30 +121,7 @@ class Application(tk.Frame):
 
 	def match_next(self):
 		#print(timeline[self.timeline_position], timeline[self.timeline_position+1])
-		self.get_matches(timeline[self.timeline_position], timeline[self.timeline_position+1])
-
-	#Given two sets of clusterings, prints the matches between a pair A,B
-	def get_matches(self, set1, set2):
-		'''pos = [i.position for i in set1]
-		print(np.mean([i[0] for i in pos]))
-		print(np.mean([i[1] for i in pos]))
-
-		pos = [i.position for i in set2]
-		print(np.mean([i[0] for i in pos]))
-		print(np.mean([i[1] for i in pos]))'''
-
-		labels_a = [i.label for i in set1]
-		labels_b = [i.label for i in set2]
-
-		get_clusters = lambda x, y: [self.min_bound_circle(x, y, i) for i in np.unique(y)]
-		clusters_a = get_clusters(set1, labels_a)
-		clusters_b = get_clusters(set2, labels_b)
-		print(clusters_a,clusters_b)
-
-		for i in clusters_a:
-			for j in clusters_b:
-				print(monic_overlap(i,j))
-				print(jaccard_overlap(i,j))
+		get_matches(timeline[self.timeline_position], timeline[self.timeline_position+1])
 
 	def get_clustering_data(self):
 		return [i.position for i in datapoints]
@@ -209,14 +129,19 @@ class Application(tk.Frame):
 	def on_save_button(self):
 		a = askstring("File name", "Insert the name of the file without extension" )
 		if a != None: 
-			for i in range(len(timeline)):
-				np.save(a + str(i), np.array(a))
+			save(a, timeline)
 
 	def on_load_datapoints(self):
-		global datapoints
-		a = askstring("File name", "Insert the name of the DATAPOINTS file without extension" )
+		global datapoints, timeline
+
+		#a = askstring("File name", "Insert the name of the DATAPOINTS file without extension" )
+		a = 'test'
 		if a != None: 
-			datapoints = np.load(a+".npy")
+			MyUtils.timeline = timeline = load(a)
+			#print(timeline == MyUtils.timeline)
+			print(len(MyUtils.timeline))
+			self.timeline_position = 0
+			datapoints = timeline[0]
 			self.update_screen()
 
 	def bind_events(self):
@@ -275,11 +200,11 @@ class Application(tk.Frame):
 	#TODO
 	#Fix error where it does not update after clustering and adding more points
 	def update_screen(self):
-		labels_ = [i.label for i in datapoints]
-		if len(labels_) > 0 and labels_[0] != None:
+		#self.canvas.delete('all')
+		labels_ = [i.label for i in datapoints if i.label is not None]
+		if len(labels_) > 0:
 			for i in np.unique(labels_):
-				
-				c = self.min_bound_circle(datapoints, labels_, i)
+				c = min_bound_circle(datapoints, labels_, i)
 				self.draw_bounding_circle(c[0], c[1])
 
 		for i in datapoints:

@@ -1,18 +1,95 @@
 import numpy as np
+import pickle
 
-#TODO: MOVE OUT
+#REGION VARIABLES
+#colors
+WHITE = '#fff'
+BLACK = '#000'
+
+RED = '#f00'
+GREEN = '#0f0'
+BLUE = '#00f'
+
+YELLOW = '#ff0'
+CYAN = '#0ff'
+MAGENTA = '#f0f'
+
+GRAY = '#aaa'
+
+
+datapoint_radius = 3
+
+#canvas declaration
+canvas_width = 800
+canvas_height = 800
+
+#stores a timeline of clustering spaces
+timeline = []
+
+#array of datapoints
+datapoints = []
+#ENDREGION VARIABLES
+
+def scan_timeline():
+	print("Scanning " + str(len(timeline)) + " clustering spaces")
+	all_overlaps = []
+	
+	for i in range(len(timeline) - 1):
+		print("Comparing clustering " + str(i) + " and clustering " + str(i+1))
+		all_overlaps.append(get_matches(timeline[i], timeline[i + 1]))
+
+	return all_overlaps
+
+def save(filename, element):
+	pickle.dump(element, open(filename, "wb"))
+
+def load(filename):
+	return pickle.load(open(filename, "rb"))
+
+#Given two sets of clusterings, prints the matches between a pair A,B
+def get_matches(set1, set2):
+	'''pos = [i.position for i in set1]
+	print(np.mean([i[0] for i in pos]))
+	print(np.mean([i[1] for i in pos]))
+
+	pos = [i.position for i in set2]
+	print(np.mean([i[0] for i in pos]))
+	print(np.mean([i[1] for i in pos]))'''
+
+	labels_a = [i.label for i in set1]
+	labels_b = [i.label for i in set2]
+
+	get_clusters = lambda x, y: [[min_bound_circle(x, y, i), i] for i in np.unique(y)]
+	clusters_a = get_clusters(set1, labels_a)
+	clusters_b = get_clusters(set2, labels_b)
+	overlap_table = []
+	for i in clusters_a:
+		for j in clusters_b:
+			overlap_table.append([i[1], j[1], monic_overlap(i[0],j[0]), jaccard_overlap(i[0], j[0])])
+	return overlap_table
+
+def min_bound_circle(cluster, labels, target):
+	xpos = [cluster[j].position[0] for j in range(len(labels)) if labels[j] == target]
+	ypos = [cluster[j].position[1] for j in range(len(labels)) if labels[j] == target]
+
+	xavg = np.mean(xpos)
+	yavg = np.mean(ypos)
+
+	radius = np.max([np.linalg.norm(np.array([xavg, yavg])-np.array([xpos[i], ypos[i]])) for i in range(len(xpos))])
+	return [[xavg, yavg], radius]
+
+#REGION: OVERLAPS
+
 #Gets two circles [[x,y], radius] and return the Jaccard index A^B/A
 def jaccard_overlap(c1, c2):
 	inter = intersection_area(c1, c2)
 	return inter / ((c1[1] * c1[1] * np.pi) + (c2[1] * c2[1] * np.pi) - inter)
 
-#TODO: MOVE OUT
 #Gets two circles [[x,y], radius] and return the MONIC index: A^B/AUB
 def monic_overlap(c1, c2):
 	inter = intersection_area(c1, c2)
 	return inter / (c1[1] * c1[1] * np.pi)
 
-#TODO: MOVE OUT
 #Based on this: https://stackoverflow.com/questions/4247889/area-of-intersection-between-two-circles
 #and this: http://mathworld.wolfram.com/Circle-CircleIntersection.html
 #this just calculates between circles!
@@ -45,3 +122,5 @@ def intersection_area(c0, c1):
 		overlap = area1 + area2
 		total = (np.pi * rr0 + np.pi * rr1) - overlap
 		return overlap #/total
+
+#ENDREGION OVERLAPS
