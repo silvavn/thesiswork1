@@ -4,6 +4,7 @@ from tkinter.simpledialog import *
 from sklearn.cluster import KMeans
 from sklearn.cluster import DBSCAN
 from KmeansScreen import *
+from MyUtils import *
 
 import numpy as np
 
@@ -126,12 +127,11 @@ class Application(tk.Frame):
 
 		self.clustering_state = StringVar(self)
 		self.clustering_state.set("Kmeans")
-		self.kmeans_config = self.new_window()
+		self.kmeans_config = KmeansScreen(tk.Toplevel(self))
 		self.clusteringmenu = OptionMenu(self, self.clustering_state, "Kmeans", "DBSCAN")
 		self.clusteringmenu.pack(side=LEFT)
 
-	def new_window(self):
-		return KmeansScreen(tk.Toplevel(self))
+		self.monic_config = MONICScreen(tk.Toplevel(self))
 
 	def min_bound_circle(self, cluster, labels, target):
 		xpos = [cluster[j].position[0] for j in range(len(labels)) if labels[j] == target]
@@ -176,52 +176,6 @@ class Application(tk.Frame):
 			datapoints[i].label = kmeans.labels_[i]
 			self.draw_datapoint(datapoints[i])
 
-	#TODO: MOVE OUT
-	#Gets two circles [[x,y], radius] and return the Jaccard index A^B/A
-	def jaccard_overlap(self, c1, c2):
-		inter = self.intersection_area(c1, c2)
-		return inter / ((c1[1] * c1[1] * np.pi) + (c2[1] * c2[1] * np.pi) - inter)
-	
-	#TODO: MOVE OUT
-	#Gets two circles [[x,y], radius] and return the MONIC index: A^B/AUB
-	def monic_overlap(self, c1, c2):
-		inter = self.intersection_area(c1, c2)
-		return inter / (c1[1] * c1[1] * np.pi)
-
-	#TODO: MOVE OUT
-	#Based on this: https://stackoverflow.com/questions/4247889/area-of-intersection-between-two-circles
-	#and this: http://mathworld.wolfram.com/Circle-CircleIntersection.html
-	#this just calculates between circles!
-	def intersection_area(self, c0, c1):
-		x0, y0, r0 = c0[0][0], c0[0][1], c0[1]
-		x1, y1, r1 = c1[0][0], c1[0][1], c1[1]
-
-		rr0 = r0 * r0
-		rr1 = r1 * r1
-		d = np.linalg.norm(np.array([x0,y0]) - np.array([x1,y1]))
-		#np.sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0))
-		#print(r0, np.pi * rr0, r1, np.pi * rr1)
-
-		#Circles do not overlap
-		if d > r1 + r0: return 0
-		#Circle1 is completely inside circle0
-		elif d <= np.absolute(r0 - r1) and r0 >= r1: 
-			#print('r0')
-			return np.pi * rr1 #/ (np.pi * rr0)
-		#Circle0 is completely inside circle1
-		elif d <= np.absolute(r0 - r1) and r0 < r1: 
-			#print('r1')
-			return np.pi * rr0 #/ (np.pi * rr1)
-		else:
-			#print('else')
-			phi = (np.arccos((rr0 + (d * d) - rr1) / (2 * r0 * d))) * 2
-			theta = (np.arccos((rr1 + (d * d) - rr0) / (2 * r1 * d))) * 2
-			area1 = 0.5 * theta * rr1 - 0.5 * rr1 * np.sin(theta)
-			area2 = 0.5 * phi * rr0 - 0.5 * rr0 * np.sin(phi)
-			overlap = area1 + area2
-			total = (np.pi * rr0 + np.pi * rr1) - overlap
-			return overlap #/total
-
 	def match_next(self):
 		#print(timeline[self.timeline_position], timeline[self.timeline_position+1])
 		self.get_matches(timeline[self.timeline_position], timeline[self.timeline_position+1])
@@ -246,8 +200,8 @@ class Application(tk.Frame):
 
 		for i in clusters_a:
 			for j in clusters_b:
-				print(self.monic_overlap(i,j))
-				print(self.jaccard_overlap(i,j))
+				print(monic_overlap(i,j))
+				print(jaccard_overlap(i,j))
 
 	def get_clustering_data(self):
 		return [i.position for i in datapoints]

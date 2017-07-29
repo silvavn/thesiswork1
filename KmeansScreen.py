@@ -49,6 +49,30 @@ class DistributionScreen(tk.Frame):
 	def close_windows(self):
 		self.master.destroy()
 
+
+class MONICScreen(tk.Frame):
+	"""docstring for MONICScreen"""
+	def __init__(self, master):
+		tk.Frame.__init__(self, master)
+		self.grid()
+		master.title("MONIC Config")
+
+		tk.Label(self, text="tau match:").grid(row=0)
+		tk.Label(self, text="tau split:").grid(row=1)
+
+		self.match = StringVar(self)
+		self.match_entry = tk.Entry(self, textvariable=self.match)
+		self.match_entry.insert(0, "0.5")
+		self.match_entry.grid(row=0,column=1)
+
+		self.split = StringVar(self)
+		self.split_entry = tk.Entry(self, textvariable=self.split)
+		self.split_entry.insert(0, "0.2")
+		self.split_entry.grid(row=1,column=1)
+
+	def close_windows(self):
+		self.master.destroy()
+
 #TODO
 #Implement metric, algorithm, leaf_size, p
 #class sklearn.cluster.DBSCAN(eps=0.5, min_samples=5, metric='euclidean', algorithm='auto', leaf_size=30, p=None, n_jobs=1)
