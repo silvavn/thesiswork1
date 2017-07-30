@@ -1,4 +1,6 @@
-#!/usr/bin/env python	  
+#!/usr/bin/env python	
+
+import pyscreenshot as ImageGrab
 import tkinter as tk
 from Datapoint import *
 from tkinter.simpledialog import *
@@ -7,6 +9,7 @@ from sklearn.cluster import DBSCAN
 from KmeansScreen import *
 from MyUtils import *
 import MyUtils
+import time
 
 import numpy as np
 
@@ -58,8 +61,8 @@ class Application(tk.Frame):
 		self.rightButton = tk.Button(self, text='next',command=self.next_button)			
 		self.rightButton.pack(side=LEFT)
 
-		self.matchButton = tk.Button(self, text='Match to Next',command=self.match_next)		
-		self.matchButton.pack(side=LEFT)
+		self.saveImageButton = tk.Button(self, text='Save Image',command=self.save_image)		
+		self.saveImageButton.pack(side=LEFT)
 
 		self.matchAllButton = tk.Button(self, text='Match All',command=self.run_scan_timeline)		
 		self.matchAllButton.pack(side=LEFT)
@@ -80,6 +83,7 @@ class Application(tk.Frame):
 		match_splits = {}
 		match_merge = {}
 		match_disappears = []
+		match_appears = []
 
 		for c in comparisons:
 			if c[2] >= tmatch:
@@ -99,8 +103,6 @@ class Application(tk.Frame):
 					match_splits[c[0]].append(c[1])
 				except:
 					match_splits[c[0]] = [c[1]]
-			if c[0] not in match_pairs and c[0] not in match_splits: # and c[0] not in match_merge:
-				match_disappears.append(c[0])
 
 		print("At timestep {} to {}".format(timestep, timestep+1))
 		for key, value in match_pairs.items():
@@ -110,7 +112,13 @@ class Application(tk.Frame):
 		for key, value in match_splits.items():
 			if len(value) > 1: print("Cluster {} splits into clusters {}".format(key, value))
 
-		if len(match_disappears) > 0: print("Clusters {} disappeared :(".format(match_disappears))
+		for c in comparisons:
+			#print(c[0])
+			if c[0] not in match_pairs and (c[0] not in match_splits or len(match_splits[c[0]]) < 2): # and c[0] not in match_merge:
+				match_disappears.append(c[0])
+
+		if len(match_disappears) > 0: print("Clusters {} disappeared :(".format(np.unique(match_disappears)))
+		if len(match_appears) > 0: print("Clusters {} emerged :)".format(np.unique(match_appears)))
 
 		#print(match_pairs)
 		#print(match_merge)
@@ -161,9 +169,8 @@ class Application(tk.Frame):
 			datapoints[i].label = kmeans.labels_[i]
 			self.draw_datapoint(datapoints[i])
 
-	def match_next(self):
-		#print(timeline[self.timeline_position], timeline[self.timeline_position+1])
-		get_matches(timeline[self.timeline_position], timeline[self.timeline_position+1])
+	def save_image(self):
+		self.getter(self.canvas)
 
 	def get_clustering_data(self):
 		return [i.position for i in datapoints]
@@ -177,11 +184,11 @@ class Application(tk.Frame):
 		global datapoints, timeline
 
 		#a = askstring("File name", "Insert the name of the DATAPOINTS file without extension" )
-		a = 'all'
+		a = 'dualall'
 		if a != None: 
 			MyUtils.timeline = timeline = load(a)
 			#print(timeline == MyUtils.timeline)
-			print(len(MyUtils.timeline))
+			#print(len(MyUtils.timeline))
 			self.timeline_position = 0
 			datapoints = timeline[0]
 			self.update_screen()
@@ -242,7 +249,7 @@ class Application(tk.Frame):
 	#TODO
 	#Fix error where it does not update after clustering and adding more points
 	def update_screen(self):
-		#self.canvas.delete('all')
+		self.canvas.delete('all')
 		labels_ = [i.label for i in datapoints if i.label is not None]
 		if len(labels_) > 0:
 			for i in np.unique(labels_):
@@ -257,6 +264,18 @@ class Application(tk.Frame):
 		timeline.append(datapoints)
 		datapoints = []
 		self.timeline_position += 1
+
+
+	def getter(self, widget):
+		global datapoints
+
+		x=root.winfo_rootx()+widget.winfo_x()
+		y=root.winfo_rooty()+widget.winfo_y()
+		x1=x+widget.winfo_width()
+		y1=y+widget.winfo_height()
+
+		arr = []
+		ImageGrab.grab().crop((x,y,x1,y1)).save(str(self.timeline_position)+".png")
 
 def main():
 	app = Application()					   
