@@ -8,6 +8,7 @@ class KmeansScreen(tk.Frame):
 		self.grid()
 		master.title("Kmeans Config")
 
+
 		tk.Label(self, text="Number of Clusters:").grid(row=0)
 		tk.Label(self, text="Number of Jobs:").grid(row=1)
 
@@ -23,6 +24,8 @@ class KmeansScreen(tk.Frame):
 
 		tk.Button(self, text='Quit', command=self.close_windows).grid(columnspan=2)
 
+		#master.geometry('%dx%d+%d+%d' % (self.winfo_width(), self.winfo_height(), 50, 50))
+
 	def close_windows(self):
 		self.master.destroy()
 
@@ -35,6 +38,7 @@ class DistributionScreen(tk.Frame):
 
 		tk.Label(self, text="Scale in Std. Dev.:").grid(row=0)
 		tk.Label(self, text="Size (Num. of points):").grid(row=1)
+		tk.Label(self, text="Cluster Label:").grid(row=2)
 		
 		self.scale = StringVar(self)
 		self.scale_entry = tk.Entry(self, textvariable=self.scale)
@@ -45,6 +49,11 @@ class DistributionScreen(tk.Frame):
 		self.size_entry = tk.Entry(self, textvariable=self.size)
 		self.size_entry.insert(0, "150")
 		self.size_entry.grid(row=1,column=1)
+
+		self.label = StringVar(self)
+		self.label_entry = tk.Entry(self, textvariable=self.label)
+		self.label_entry.insert(0, "None")
+		self.label_entry.grid(row=2,column=1)
 
 	def close_windows(self):
 		self.master.destroy()
@@ -84,11 +93,12 @@ class DBSCANScreen(tk.Frame):
 
 		tk.Label(self, text="eps (datapoints max distance):").grid(row=0)
 		tk.Label(self, text="minsamples:").grid(row=1)
+		tk.Label(self, text="Num Jobs:").grid(row=2)
 		
 		self.eps = StringVar(self)
 		self.eps_entry = tk.Entry(self, textvariable=self.eps)
-		self.eps_entry.insert(0, "0.5")
-		self.eps_entry.grid(row=1,column=1)
+		self.eps_entry.insert(0, "50.0")
+		self.eps_entry.grid(row=0,column=1)
 
 		self.min_samples = StringVar(self)
 		self.min_samples_entry = tk.Entry(self, textvariable=self.min_samples)
@@ -98,7 +108,7 @@ class DBSCANScreen(tk.Frame):
 		self.n_jobs = StringVar(self)
 		self.n_jobs_entry = tk.Entry(self, textvariable=self.n_jobs)
 		self.n_jobs_entry.insert(0, "1")
-		self.n_jobs_entry.grid(row=1,column=1)
+		self.n_jobs_entry.grid(row=2,column=1)
 
 	def close_windows(self):
 		self.master.destroy()

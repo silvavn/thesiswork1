@@ -17,6 +17,7 @@ root = tk.Tk()
 #TODO
 #Fix a bug where if you dont press next or prev it wont save the current clustering space
 #Save canvas as image
+#insert poits with labels
 class Application(tk.Frame):
 	def __init__(self, master=None):
 		tk.Frame.__init__(self, master)
@@ -28,16 +29,6 @@ class Application(tk.Frame):
 		#Migrate to a initialize_vars routine -> has to run before widgets and events
 		self.timeline_position = 0
 		self.__current_click_window = None
-
-	def clickmenu_controller(self, value):
-		
-		self.__click_state = value
-		
-		if self.__current_click_window != None:
-			self.__current_click_window.close_windows()
-		
-		if self.__click_state == "Distribution":
-			self.__current_click_window = DistributionScreen(tk.Toplevel(self))
 
 	def create_widgets(self):
 		self.canvas = tk.Canvas(self, width=canvas_width, height=canvas_height,bg=BLACK)
@@ -69,8 +60,8 @@ class Application(tk.Frame):
 
 		self.clustering_state = StringVar(self)
 		self.clustering_state.set("Kmeans")
-		self.kmeans_config = KmeansScreen(tk.Toplevel(self))
-		self.clusteringmenu = OptionMenu(self, self.clustering_state, "Kmeans", "DBSCAN")
+		self.clustering_config = self.__current_clustering_window = KmeansScreen(tk.Toplevel(self))
+		self.clusteringmenu = OptionMenu(self, self.clustering_state, "Kmeans", "DBSCAN", command=self.clustering_controller)
 		self.clusteringmenu.pack(side=LEFT)
 
 		self.clusteringButton = tk.Button(self, text='Run Clustering',command=self.run_clustering)		
@@ -150,7 +141,9 @@ class Application(tk.Frame):
 		elif st == "DBSCAN": self.run_DBSCAN()
 
 	def run_DBSCAN(self):
-		dbscan = DBSCAN(eps=50, n_jobs=-1).fit(self.get_clustering_data())
+		dbscan = DBSCAN(eps=float(self.clustering_config.eps.get()), 
+			min_samples=int(self.clustering_config.min_samples.get()),
+			n_jobs=int(self.clustering_config.n_jobs.get())).fit(self.get_clustering_data())
 		for i in np.unique(dbscan.labels_):
 			c = min_bound_circle(datapoints, dbscan.labels_, i)
 			self.draw_bounding_circle(c[0], c[1])
@@ -160,7 +153,7 @@ class Application(tk.Frame):
 			self.draw_datapoint(datapoints[i])
 
 	def run_Kmeans(self):
-		kmeans = KMeans(n_clusters=int(self.kmeans_config.num_clusters.get()), random_state=0, n_jobs=int(self.kmeans_config.num_jobs.get())).fit(self.get_clustering_data())
+		kmeans = KMeans(n_clusters=int(self.clustering_config.num_clusters.get()), random_state=0, n_jobs=int(self.clustering_config.num_jobs.get())).fit(self.get_clustering_data())
 		for i in np.unique(kmeans.labels_):
 			c = min_bound_circle(datapoints, kmeans.labels_, i)
 			self.draw_bounding_circle(c[0], c[1])
@@ -174,6 +167,27 @@ class Application(tk.Frame):
 
 	def get_clustering_data(self):
 		return [i.position for i in datapoints]
+
+	def clustering_controller(self, value):
+		self.__clustering_state = value
+
+		if self.__current_clustering_window != None:
+			self.__current_clustering_window.close_windows()
+
+		if self.__clustering_state == 'DBSCAN':
+			self.__current_clustering_window = self.clustering_config = DBSCANScreen(tk.Toplevel(self))
+		elif self.__clustering_state == 'Kmeans':
+			self.__current_clustering_window = self.clustering_config = KmeansScreen(tk.Toplevel(self))
+
+	def clickmenu_controller(self, value):
+		
+		self.__click_state = value
+		
+		if self.__current_click_window != None:
+			self.__current_click_window.close_windows()
+		
+		if self.__click_state == "Distribution":
+			self.__current_click_window = DistributionScreen(tk.Toplevel(self))
 
 	def on_save_button(self):
 		a = askstring("File name", "Insert the name of the file without extension" )
@@ -205,7 +219,9 @@ class Application(tk.Frame):
 		if st == "Distribution":
 			dx = np.random.normal(0, float(self.__current_click_window.scale.get()), int(self.__current_click_window.size.get()))
 			dy = np.random.normal(0, float(self.__current_click_window.scale.get()), int(self.__current_click_window.size.get()))
-			for i in range(int(self.__current_click_window.size.get())): datapoints.append(Datapoint([event.x + dx[i] , event.y + dy[i]]))
+			for i in range(int(self.__current_click_window.size.get())): 
+				datapoints.append(Datapoint([event.x + dx[i] , event.y + dy[i]], 
+											None if self.__current_click_window.label.get() == 'None' else int(self.__current_click_window.label.get())))
 			self.update_screen()
 
 		elif st == "Click":
@@ -279,7 +295,7 @@ class Application(tk.Frame):
 
 def main():
 	app = Application()					   
-	app.master.title('System')	
+	app.master.title('System')
 	app.mainloop() 
 
 if __name__ == '__main__':
