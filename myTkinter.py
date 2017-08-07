@@ -30,6 +30,7 @@ class Application(tk.Frame):
 		self.timeline_position = 0
 		self.__current_click_window = None
 
+
 	def create_widgets(self):
 		self.canvas = tk.Canvas(self, width=canvas_width, height=canvas_height,bg=BLACK)
 		self.canvas.pack(anchor=W)
@@ -69,6 +70,7 @@ class Application(tk.Frame):
 
 		self.monic_config = MONICScreen(tk.Toplevel(self))
 
+
 	def detect_external_transitions(self, comparisons, timestep, tmatch, tsplit):
 		match_pairs = {}
 		match_splits = {}
@@ -96,26 +98,40 @@ class Application(tk.Frame):
 					match_splits[c[0]] = [c[1]]
 
 		print("At timestep {} to {}".format(timestep, timestep+1))
+		
+		new_timelines = []
+		ceased_timelines = []
+
+		#BUG!!!
+		#absorbed is called twice
 		for key, value in match_pairs.items():
 			if len(value) == 1 and len(match_merge[value[0]]) == 1: print("Cluster {} matches with clusters {}".format(key, value))
-			elif len(match_merge[value[0]]) > 1: print("Clusters {} are absorbed by cluster {}".format(match_merge[value[0]], value))
+			elif len(match_merge[value[0]]) > 1: 
+				print("Clusters {} are absorbed by cluster {}".format(match_merge[value[0]], value))
+				new_timelines.append(value)
+				ceased_timelines.extend(match_merge[value[0]])
 
 		for key, value in match_splits.items():
-			if len(value) > 1: print("Cluster {} splits into clusters {}".format(key, value))
+			if len(value) > 1:
+				print("Cluster {} splits into clusters {}".format(key, value))
+				ceased_timelines.append(key)
+				new_timelines.extend(value)
 
 		for c in comparisons:
 			#print(c[0])
 			if c[0] not in match_pairs and (c[0] not in match_splits or len(match_splits[c[0]]) < 2): # and c[0] not in match_merge:
 				match_disappears.append(c[0])
 
-		if len(match_disappears) > 0: print("Clusters {} disappeared :(".format(np.unique(match_disappears)))
-		if len(match_appears) > 0: print("Clusters {} emerged :)".format(np.unique(match_appears)))
+		if len(match_disappears) > 0: 
+			print("Clusters {} disappeared :(".format(np.unique(match_disappears)))
+			ceased_timelines.extend(match_disappears)
+		if len(match_appears) > 0: 
+			print("Clusters {} emerged :)".format(np.unique(match_appears)))
+			new_timelines.extend(match_appears)
 
-		#print(match_pairs)
-		#print(match_merge)
+		print("New timelines: ", np.unique(new_timelines))
+		print("Ceased timelines: ", np.unique(ceased_timelines))
 
-		#print(match_pairs)
-		#print(splits)
 
 	def run_scan_timeline(self):
 		overlaps = scan_timeline()
@@ -127,6 +143,7 @@ class Application(tk.Frame):
 			'''if overlaps[i][2] > self.monic_config.match.get():
 				print("At clusterings {} and {}, clusters {} and {} match!".format(i,i+1, overlaps[i][0], overlaps[i][1]))'''
 
+
 	def draw_bounding_circle(self, position, radius, c=WHITE):
 		self.canvas.create_oval(position[0]-radius, 
 			position[1]-radius, 
@@ -134,14 +151,17 @@ class Application(tk.Frame):
 			position[1]+radius, 
 			fill=c)
 
+
 	def draw_boundind_box(self, x0, y0, x1, y1, c=WHITE):
 		self.canvas.create_rectangle(x0, y0, x1, y1, fill=c)
+
 
 	def run_clustering(self):
 		st = self.clustering_state.get()
 		self.canvas.delete('all')
 		if st == "Kmeans": self.run_Kmeans()
 		elif st == "DBSCAN": self.run_DBSCAN()
+
 
 	def run_DBSCAN(self):
 		dbscan = DBSCAN(eps=float(self.clustering_config.eps.get()), 
@@ -156,7 +176,7 @@ class Application(tk.Frame):
 				c = min_bound_box(datapoints, dbscan.labels_, i)
 				self.draw_boundind_box(c[0], c[1], c[2], c[3])
 			elif shape == 'Grid':
-				c = grid_shape(datapoints, dbscan.labels_, i, [int(self.monic_config.grid_res_x.get()),int(self.monic_config.grid_res_y.get())])
+				c = grid_shape(datapoints, dbscan.labels_, i, [int(self.monic_config.grid_res_x.get()),int(self.monic_config.grid_res_y .get())])
 				for cell in c:
 					self.draw_boundind_box(cell[0], cell[1], cell[2], cell[3])
 			elif shape == 'Quadtree':
@@ -169,6 +189,7 @@ class Application(tk.Frame):
 		for i in range(len(dbscan.labels_)):
 			datapoints[i].label = dbscan.labels_[i]
 			self.draw_datapoint(datapoints[i])
+
 
 	def run_Kmeans(self):
 		kmeans = KMeans(n_clusters=int(self.clustering_config.num_clusters.get()), random_state=0, n_jobs=int(self.clustering_config.num_jobs.get())).fit(self.get_clustering_data())
@@ -185,11 +206,14 @@ class Application(tk.Frame):
 			datapoints[i].label = kmeans.labels_[i]
 			self.draw_datapoint(datapoints[i])
 
+
 	def save_image(self):
 		self.getter(self.canvas)
 
+
 	def get_clustering_data(self):
 		return [i.position for i in datapoints]
+
 
 	def clustering_controller(self, value):
 		self.__clustering_state = value
@@ -202,6 +226,7 @@ class Application(tk.Frame):
 		elif self.__clustering_state == 'Kmeans':
 			self.__current_clustering_window = self.clustering_config = KmeansScreen(tk.Toplevel(self))
 
+
 	def clickmenu_controller(self, value):
 		
 		self.__click_state = value
@@ -212,16 +237,18 @@ class Application(tk.Frame):
 		if self.__click_state == "Distribution":
 			self.__current_click_window = DistributionScreen(tk.Toplevel(self))
 
+
 	def on_save_button(self):
 		a = askstring("File name", "Insert the name of the file without extension" )
 		if a != None: 
 			save(a, timeline)
 
+
 	def on_load_datapoints(self):
 		global datapoints, timeline
 
 		#a = askstring("File name", "Insert the name of the DATAPOINTS file without extension" )
-		a = 'LShape'
+		a = 'all'
 		if a != None: 
 			MyUtils.timeline = timeline = load(a)
 			#print(timeline == MyUtils.timeline)
@@ -230,12 +257,15 @@ class Application(tk.Frame):
 			datapoints = timeline[0]
 			self.update_screen()
 
+
 	def bind_events(self):
 		#Mouse left button click
 		self.canvas.bind("<Button 1>",self.on_mouse_click)
 
+
 	def draw_datapoint(self, d):
 		d.draw(self.canvas)
+
 
 	def on_mouse_click(self, event):
 		st = self.click_state.get()
@@ -255,6 +285,7 @@ class Application(tk.Frame):
 				np.random.randint(0,canvas_height)]))
 			self.draw_datapoint(datapoints[-1])
 
+
 	def next_button(self):
 		global datapoints, timeline
 		if len(datapoints) > 0:
@@ -273,6 +304,7 @@ class Application(tk.Frame):
 			#print(datapoints, self.timeline_position, len(timeline))
 			#print("ta",timeline)
 
+
 	def prev_button(self):
 		global datapoints, timeline
 		
@@ -284,6 +316,7 @@ class Application(tk.Frame):
 		self.timeline_position -= 1
 		datapoints = timeline[self.timeline_position]
 		self.update_screen()
+
 
 	#TODO
 	#Fix error where it does not update after clustering and adding more points
@@ -297,6 +330,7 @@ class Application(tk.Frame):
 
 		for i in datapoints:
 			self.draw_datapoint(i)
+
 
 	def create_new_clustering(self):
 		global datapoints
@@ -316,11 +350,12 @@ class Application(tk.Frame):
 		arr = []
 		ImageGrab.grab().crop((x,y,x1,y1)).save(str(self.timeline_position)+".png")
 
+
 def main():
 	app = Application()					   
 	app.master.title('System')
 	app.mainloop() 
 
+
 if __name__ == '__main__':
 	main()
-
