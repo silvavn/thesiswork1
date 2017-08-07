@@ -134,6 +134,9 @@ class Application(tk.Frame):
 			position[1]+radius, 
 			fill=c)
 
+	def draw_boundind_box(self, x0, y0, x1, y1, c=WHITE):
+		self.canvas.create_rectangle(x0, y0, x1, y1, fill=c)
+
 	def run_clustering(self):
 		st = self.clustering_state.get()
 		self.canvas.delete('all')
@@ -145,8 +148,23 @@ class Application(tk.Frame):
 			min_samples=int(self.clustering_config.min_samples.get()),
 			n_jobs=int(self.clustering_config.n_jobs.get())).fit(self.get_clustering_data())
 		for i in np.unique(dbscan.labels_):
-			c = min_bound_circle(datapoints, dbscan.labels_, i)
-			self.draw_bounding_circle(c[0], c[1])
+			shape = self.monic_config.shape_state.get()
+			if shape == 'Circle':
+				c = min_bound_circle(datapoints, dbscan.labels_, i)
+				self.draw_bounding_circle(c[0], c[1])
+			elif shape == 'Box':
+				c = min_bound_box(datapoints, dbscan.labels_, i)
+				self.draw_boundind_box(c[0], c[1], c[2], c[3])
+			elif shape == 'Grid':
+				c = grid_shape(datapoints, dbscan.labels_, i, [int(self.monic_config.grid_res_x.get()),int(self.monic_config.grid_res_y.get())])
+				for cell in c:
+					self.draw_boundind_box(cell[0], cell[1], cell[2], cell[3])
+			elif shape == 'Quadtree':
+				bb = min_bound_box(datapoints, dbscan.labels_, i)
+				c = quadtree(datapoints, bb, int(self.monic_config.qt_depth.get()))
+				for cell in c:
+					self.draw_boundind_box(cell[0], cell[1], cell[2], cell[3])
+			
 
 		for i in range(len(dbscan.labels_)):
 			datapoints[i].label = dbscan.labels_[i]
@@ -155,8 +173,13 @@ class Application(tk.Frame):
 	def run_Kmeans(self):
 		kmeans = KMeans(n_clusters=int(self.clustering_config.num_clusters.get()), random_state=0, n_jobs=int(self.clustering_config.num_jobs.get())).fit(self.get_clustering_data())
 		for i in np.unique(kmeans.labels_):
-			c = min_bound_circle(datapoints, kmeans.labels_, i)
-			self.draw_bounding_circle(c[0], c[1])
+			shape = self.monic_config.shape_state.get()
+			if shape == 'Circle':
+				c = min_bound_circle(datapoints, kmeans.labels_, i)
+				self.draw_bounding_circle(c[0], c[1])
+			elif shape == 'Box':
+				c = min_bound_box(datapoints, kmeans.labels_, i)
+				self.draw_boundind_box(c[0], c[1], c[2], c[3])
 		
 		for i in range(len(kmeans.labels_)):
 			datapoints[i].label = kmeans.labels_[i]
@@ -198,7 +221,7 @@ class Application(tk.Frame):
 		global datapoints, timeline
 
 		#a = askstring("File name", "Insert the name of the DATAPOINTS file without extension" )
-		a = 'dualall'
+		a = 'LShape'
 		if a != None: 
 			MyUtils.timeline = timeline = load(a)
 			#print(timeline == MyUtils.timeline)

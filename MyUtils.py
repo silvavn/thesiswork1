@@ -68,15 +68,76 @@ def get_matches(set1, set2):
 			overlap_table.append([i[1], j[1], monic_overlap(i[0],j[0]), jaccard_overlap(i[0], j[0])])
 	return overlap_table
 
-def min_bound_circle(cluster, labels, target):
+def get_target_cluster(cluster, labels, target):
 	xpos = [cluster[j].position[0] for j in range(len(labels)) if labels[j] == target]
 	ypos = [cluster[j].position[1] for j in range(len(labels)) if labels[j] == target]
+	return xpos, ypos
+
+def min_bound_circle(cluster, labels, target):
+	xpos, ypos = get_target_cluster(cluster, labels, target)
 
 	xavg = np.mean(xpos)
 	yavg = np.mean(ypos)
 
 	radius = np.max([np.linalg.norm(np.array([xavg, yavg])-np.array([xpos[i], ypos[i]])) for i in range(len(xpos))])
 	return [[xavg, yavg], radius]
+
+def min_bound_box(cluster, labels, target):
+	xpos, ypos = get_target_cluster(cluster, labels, target)
+	return [np.min(xpos), np.min(ypos), np.max(xpos), np.max(ypos)]
+
+#Gets a set of points and a bounding box
+#Returns True if any of the points collide with the bounding box
+#Returns False otherwise
+def cluster_collision(cluster, box):
+	for p in cluster:
+		if (p.position[0] >= box[0] and p.position[0] <= box[2]) and (p.position[1] >= box[1] and p.position[1] <= box[3]):
+			return True
+	return False
+
+def grid_shape(cluster, labels, target, resolution=[5,5]):
+	bb = min_bound_box(cluster, labels, target)
+	x_side = (bb[2] - bb[0]) / resolution[0]
+	y_side = (bb[3] - bb[1]) / resolution[1]
+	
+	cells = []
+
+	for y in range(resolution[1]):
+		for x in range(resolution[0]):
+			x_min = x * x_side + bb[0]
+			x_max = x_min + x_side
+			y_min = y * y_side + bb[1]
+			y_max = y_min + y_side
+			box = [x_min, y_min, x_max, y_max]
+			if cluster_collision(cluster, box):
+				cells.append(box)
+	return cells
+
+#cluster is the set of points
+#bb is an array [x0, y0, x1, y1]
+#depth is the maximum depth of the recursion
+def quadtree(cluster, bb, depth=5):
+	if(depth == 0): return []
+	boxes = [bb]
+	
+	halfx = (bb[0]+bb[2])/2
+	halfy = (bb[1]+bb[3])/2
+	bb0 = [bb[0], bb[1], halfx, halfy]
+	bb1 = [halfx, bb[1], bb[2], halfy]
+	bb2 = [halfx, halfy, bb[2], bb[3]]
+	bb3 = [bb[0], halfy, halfx, bb[3]]
+	candidates = [bb0,bb1,bb2,bb3]
+	child = []
+
+	for i in candidates: 
+		if cluster_collision(cluster, i):
+			child.append(i)
+			boxes.append(i)
+
+	for i in child:
+		boxes.extend (quadtree(cluster, i, depth - 1))
+	return boxes
+
 
 #REGION: OVERLAPS
 

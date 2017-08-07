@@ -58,7 +58,6 @@ class DistributionScreen(tk.Frame):
 	def close_windows(self):
 		self.master.destroy()
 
-
 class MONICScreen(tk.Frame):
 	"""docstring for MONICScreen"""
 	def __init__(self, master):
@@ -68,6 +67,10 @@ class MONICScreen(tk.Frame):
 
 		tk.Label(self, text="tau match:").grid(row=0)
 		tk.Label(self, text="tau split:").grid(row=1)
+		tk.Label(self, text="Cluster Shape:").grid(row=2)
+		tk.Label(self, text="Quadtree Depth:").grid(row=3)
+		tk.Label(self, text="Grid X Resolution:").grid(row=4)
+		tk.Label(self, text="Grid Y Resolution:").grid(row=5)
 
 		self.match = StringVar(self)
 		self.match_entry = tk.Entry(self, textvariable=self.match)
@@ -78,6 +81,26 @@ class MONICScreen(tk.Frame):
 		self.split_entry = tk.Entry(self, textvariable=self.split)
 		self.split_entry.insert(0, "0.1")
 		self.split_entry.grid(row=1,column=1)
+
+		self.shape_state = StringVar(self)
+		self.shape_state.set("Circle")
+		self.shapemenu = OptionMenu(self, self.shape_state, "Circle", "Box", "Grid", "Quadtree")#, command=self.clustering_controller)
+		self.shapemenu.grid(row=2, column=1)
+
+		self.qt_depth = StringVar(self)
+		self.qt_depth_entry = tk.Entry(self, textvariable=self.qt_depth)
+		self.qt_depth_entry.insert(0, "5")
+		self.qt_depth_entry.grid(row=3,column=1)
+
+		self.grid_res_x = StringVar(self)
+		self.grid_res_x_entry = tk.Entry(self, textvariable=self.grid_res_x)
+		self.grid_res_x_entry.insert(0, "5")
+		self.grid_res_x_entry.grid(row=4,column=1)
+
+		self.grid_res_y = StringVar(self)
+		self.grid_res_y_entry = tk.Entry(self, textvariable=self.grid_res_y)
+		self.grid_res_y_entry.insert(0, "5")
+		self.grid_res_y_entry.grid(row=5,column=1)
 
 	def close_windows(self):
 		self.master.destroy()
