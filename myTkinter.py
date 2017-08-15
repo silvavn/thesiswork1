@@ -248,7 +248,7 @@ class Application(tk.Frame):
 		global datapoints, timeline
 
 		#a = askstring("File name", "Insert the name of the DATAPOINTS file without extension" )
-		a = 'all'
+		a = 'dualall'
 		if a != None: 
 			MyUtils.timeline = timeline = load(a)
 			#print(timeline == MyUtils.timeline)

@@ -2,33 +2,8 @@
 import tkinter as tk
 from tkinter.simpledialog import *
 
-class KmeansScreen(tk.Frame):
-	def __init__(self, master):
-		tk.Frame.__init__(self, master)
-		self.grid()
-		master.title("Kmeans Config")
 
-
-		tk.Label(self, text="Number of Clusters:").grid(row=0)
-		tk.Label(self, text="Number of Jobs:").grid(row=1)
-
-		self.num_jobs = StringVar(self)
-		self.n_jobs_entry = tk.Entry(self, textvariable=self.num_jobs)
-		self.n_jobs_entry.insert(0, "1")
-		self.n_jobs_entry.grid(row=1,column=1)
-		
-		self.num_clusters = StringVar(self)
-		self.n_clusters_entry = tk.Entry(self, textvariable=self.num_clusters)
-		self.n_clusters_entry.insert(0, "1")
-		self.n_clusters_entry.grid(row=0,column=1)
-
-		tk.Button(self, text='Quit', command=self.close_windows).grid(columnspan=2)
-
-		#master.geometry('%dx%d+%d+%d' % (self.winfo_width(), self.winfo_height(), 50, 50))
-
-	def close_windows(self):
-		self.master.destroy()
-
+#Screen that controls the Click on distribution
 #numpy.random.normal(loc=0.0, scale=1.0, size=None)
 class DistributionScreen(tk.Frame):
 	def __init__(self, master):
@@ -58,8 +33,11 @@ class DistributionScreen(tk.Frame):
 	def close_windows(self):
 		self.master.destroy()
 
+
+#Screen that controls the MONIC Framework
+#Currently Implements:
+#@Tau Match, @Tau Split, @Cluster Shape, @Quadtree Depth, @GridX Resolution, @GridY Resolution
 class MONICScreen(tk.Frame):
-	"""docstring for MONICScreen"""
 	def __init__(self, master):
 		tk.Frame.__init__(self, master)
 		self.grid()
@@ -105,6 +83,8 @@ class MONICScreen(tk.Frame):
 	def close_windows(self):
 		self.master.destroy()
 
+
+#Screen that controls the DBSCAN Algorithm
 #TODO
 #Implement metric, algorithm, leaf_size, p
 #class sklearn.cluster.DBSCAN(eps=0.5, min_samples=5, metric='euclidean', algorithm='auto', leaf_size=30, p=None, n_jobs=1)
@@ -132,6 +112,35 @@ class DBSCANScreen(tk.Frame):
 		self.n_jobs_entry = tk.Entry(self, textvariable=self.n_jobs)
 		self.n_jobs_entry.insert(0, "1")
 		self.n_jobs_entry.grid(row=2,column=1)
+
+	def close_windows(self):
+		self.master.destroy()
+
+
+#Screen that controls the Kmeans Algorithm
+class KmeansScreen(tk.Frame):
+	def __init__(self, master):
+		tk.Frame.__init__(self, master)
+		self.grid()
+		master.title("Kmeans Config")
+
+
+		tk.Label(self, text="Number of Clusters:").grid(row=0)
+		tk.Label(self, text="Number of Jobs:").grid(row=1)
+
+		self.num_jobs = StringVar(self)
+		self.n_jobs_entry = tk.Entry(self, textvariable=self.num_jobs)
+		self.n_jobs_entry.insert(0, "1")
+		self.n_jobs_entry.grid(row=1,column=1)
+		
+		self.num_clusters = StringVar(self)
+		self.n_clusters_entry = tk.Entry(self, textvariable=self.num_clusters)
+		self.n_clusters_entry.insert(0, "1")
+		self.n_clusters_entry.grid(row=0,column=1)
+
+		tk.Button(self, text='Quit', command=self.close_windows).grid(columnspan=2)
+
+		#master.geometry('%dx%d+%d+%d' % (self.winfo_width(), self.winfo_height(), 50, 50))
 
 	def close_windows(self):
 		self.master.destroy()

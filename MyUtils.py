@@ -1,3 +1,11 @@
+#!/usr/bin/env python	
+'''
+List of regions in this file:
+	VARIABLES
+	OVERLAPS
+	SHAPES
+'''
+
 import numpy as np
 import pickle
 
@@ -16,7 +24,6 @@ MAGENTA = '#f0f'
 
 GRAY = '#aaa'
 
-
 datapoint_radius = 3
 
 #canvas declaration
@@ -30,6 +37,8 @@ timeline = []
 datapoints = []
 #ENDREGION VARIABLES
 
+#Gets -
+#Return an array of overlaps
 def scan_timeline():
 	print("Scanning " + str(len(timeline)) + " clustering spaces")
 	all_overlaps = []
@@ -40,39 +49,30 @@ def scan_timeline():
 
 	return all_overlaps
 
+#Gets a filename and an array
+#Saves the given array to a file using pickle in binary.
 def save(filename, element):
 	pickle.dump(element, open(filename, "wb"))
 
+
+#Gets a filename
+#Loads the given file to memory. The file must be binary.
 def load(filename):
 	return pickle.load(open(filename, "rb"))
 
-#Given two sets of clusterings, prints the matches between a pair A,B
-def get_matches(set1, set2):
-	'''pos = [i.position for i in set1]
-	print(np.mean([i[0] for i in pos]))
-	print(np.mean([i[1] for i in pos]))
-
-	pos = [i.position for i in set2]
-	print(np.mean([i[0] for i in pos]))
-	print(np.mean([i[1] for i in pos]))'''
-
-	labels_a = [i.label for i in set1]
-	labels_b = [i.label for i in set2]
-
-	get_clusters = lambda x, y: [[min_bound_circle(x, y, i), i] for i in np.unique(y)]
-	clusters_a = get_clusters(set1, labels_a)
-	clusters_b = get_clusters(set2, labels_b)
-	overlap_table = []
-	for i in clusters_a:
-		for j in clusters_b:
-			overlap_table.append([i[1], j[1], monic_overlap(i[0],j[0]), jaccard_overlap(i[0], j[0])])
-	return overlap_table
-
+#Receives a set of points, a set of labels and a target label
+#Returns a tuple of arrays that contain the x, y positions of points that have the target label
 def get_target_cluster(cluster, labels, target):
 	xpos = [cluster[j].position[0] for j in range(len(labels)) if labels[j] == target]
 	ypos = [cluster[j].position[1] for j in range(len(labels)) if labels[j] == target]
 	return xpos, ypos
 
+#REGION SHAPES
+
+#Gets a set of points, all labels and a target label
+#Returns a circle structure in the form [[x,y] radius]
+#this do NOT return the true minimum bouding circle, but a circle that has the center in the mean
+#of the cluster and radius is equal to the distance between the farthest point and the center
 def min_bound_circle(cluster, labels, target):
 	xpos, ypos = get_target_cluster(cluster, labels, target)
 
@@ -82,9 +82,13 @@ def min_bound_circle(cluster, labels, target):
 	radius = np.max([np.linalg.norm(np.array([xavg, yavg])-np.array([xpos[i], ypos[i]])) for i in range(len(xpos))])
 	return [[xavg, yavg], radius]
 
+
+#Gets a set of points, all labels and a target label
+#Returns a minimum bounding box for the points that have the target label
 def min_bound_box(cluster, labels, target):
 	xpos, ypos = get_target_cluster(cluster, labels, target)
 	return [np.min(xpos), np.min(ypos), np.max(xpos), np.max(ypos)]
+
 
 #Gets a set of points and a bounding box
 #Returns True if any of the points collide with the bounding box
@@ -95,6 +99,9 @@ def cluster_collision(cluster, box):
 			return True
 	return False
 
+
+#Gets a set of points, a set of labels, a target label and a resolution array [x,y]
+#Returns a grid shape where the shape represent the cluster given a resolution
 def grid_shape(cluster, labels, target, resolution=[5,5]):
 	bb = min_bound_box(cluster, labels, target)
 	x_side = (bb[2] - bb[0]) / resolution[0]
@@ -113,9 +120,9 @@ def grid_shape(cluster, labels, target, resolution=[5,5]):
 				cells.append(box)
 	return cells
 
-#cluster is the set of points
-#bb is an array [x0, y0, x1, y1]
-#depth is the maximum depth of the recursion
+
+#Gets a set of points, a bounding box arra [x0, y0, x1, y1] and a recursion depth
+#returns a shape given by a quadtree
 def quadtree(cluster, bb, depth=5):
 	if(depth == 0): return []
 	boxes = [bb]
@@ -138,18 +145,46 @@ def quadtree(cluster, bb, depth=5):
 		boxes.extend (quadtree(cluster, i, depth - 1))
 	return boxes
 
+#ENDREGION SHAPES
 
-#REGION: OVERLAPS
+#REGION OVERLAPS
+
+#Given two clustering spaces, return the overlap table bertween the clusters in the given spaces
+#The overlap table is an array that contain the overlap for a pair of clusters
+#The internal array is as follows [cluster1, cluster2, MONIC OVERLAP, JACCARD OVERLAP]
+def get_matches(set1, set2):
+	'''pos = [i.position for i in set1]
+	print(np.mean([i[0] for i in pos]))
+	print(np.mean([i[1] for i in pos]))
+
+	pos = [i.position for i in set2]
+	print(np.mean([i[0] for i in pos]))
+	print(np.mean([i[1] for i in pos]))'''
+
+	labels_a = [i.label for i in set1]
+	labels_b = [i.label for i in set2]
+
+	get_clusters = lambda x, y: [[min_bound_circle(x, y, i), i] for i in np.unique(y)]
+	clusters_a = get_clusters(set1, labels_a)
+	clusters_b = get_clusters(set2, labels_b)
+	overlap_table = []
+	for i in clusters_a:
+		for j in clusters_b:
+			overlap_table.append([i[1], j[1], monic_overlap(i[0],j[0]), jaccard_overlap(i[0], j[0])])
+	return overlap_table
+
 
 #Gets two circles [[x,y], radius] and return the Jaccard index A^B/A
 def jaccard_overlap(c1, c2):
 	inter = intersection_area(c1, c2)
 	return inter / ((c1[1] * c1[1] * np.pi) + (c2[1] * c2[1] * np.pi) - inter)
 
+
 #Gets two circles [[x,y], radius] and return the MONIC index: A^B/AUB
 def monic_overlap(c1, c2):
 	inter = intersection_area(c1, c2)
 	return inter / (c1[1] * c1[1] * np.pi)
+
 
 #Based on this: https://stackoverflow.com/questions/4247889/area-of-intersection-between-two-circles
 #and this: http://mathworld.wolfram.com/Circle-CircleIntersection.html

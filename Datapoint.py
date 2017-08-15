@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from MyUtils import *
 
 class Datapoint:
