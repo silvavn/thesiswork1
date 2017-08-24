@@ -67,6 +67,72 @@ def get_target_cluster(cluster, labels, target):
 	ypos = [cluster[j].position[1] for j in range(len(labels)) if labels[j] == target]
 	return xpos, ypos
 
+#REGION TRANSITIONS
+
+def detect_external_transitions(comparisons, timestep, tmatch, tsplit):
+	match_pairs = {}
+	match_splits = {}
+	match_merge = {}
+	match_disappears = []
+	match_appears = []
+
+	for c in comparisons:
+		if c[2] >= tmatch:
+			try:
+				match_pairs[c[0]].append(c[1])
+			except:
+				match_pairs[c[0]] = [c[1]]
+
+		if c[2] >= tmatch:
+			try:
+				match_merge[c[1]].append(c[0])
+			except:
+				match_merge[c[1]] = [c[0]]
+
+		if c[2] >= tsplit:
+			try:
+				match_splits[c[0]].append(c[1])
+			except:
+				match_splits[c[0]] = [c[1]]
+
+	print("At timestep {} to {}".format(timestep, timestep+1))
+	
+	new_timelines = []
+	ceased_timelines = []
+
+	#BUG!!!
+	#absorbed is called twice
+	for key, value in match_pairs.items():
+		if len(value) == 1 and len(match_merge[value[0]]) == 1: print("Cluster {} matches with clusters {}".format(key, value))
+		elif len(match_merge[value[0]]) > 1: 
+			print("Clusters {} are absorbed by cluster {}".format(match_merge[value[0]], value))
+			new_timelines.append(value)
+			ceased_timelines.extend(match_merge[value[0]])
+
+	for key, value in match_splits.items():
+		if len(value) > 1:
+			print("Cluster {} splits into clusters {}".format(key, value))
+			ceased_timelines.append(key)
+			new_timelines.extend(value)
+
+	for c in comparisons:
+		#print(c[0])
+		if c[0] not in match_pairs and (c[0] not in match_splits or len(match_splits[c[0]]) < 2): # and c[0] not in match_merge:
+			match_disappears.append(c[0])
+
+	if len(match_disappears) > 0: 
+		print("Clusters {} disappeared :(".format(np.unique(match_disappears)))
+		ceased_timelines.extend(match_disappears)
+	if len(match_appears) > 0: 
+		print("Clusters {} emerged :)".format(np.unique(match_appears)))
+		new_timelines.extend(match_appears)
+
+	print("New timelines: ", np.unique(new_timelines))
+	print("Ceased timelines: ", np.unique(ceased_timelines))
+
+#ENDREGION TRANSITIONS
+
+
 #REGION SHAPES
 
 #Gets a set of points, all labels and a target label
