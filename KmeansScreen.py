@@ -33,6 +33,28 @@ class DistributionScreen(tk.Frame):
 	def close_windows(self):
 		self.master.destroy()
 
+class InterpolationtionScreen(tk.Frame):
+	def __init__(self, master):
+		tk.Frame.__init__(self, master)
+		self.grid()
+		master.title("Interpolation Config")
+
+		tk.Label(self, text="Num Steps:").grid(row=0)
+		tk.Label(self, text="Added noise(Std. Dev.):").grid(row=1)
+		
+		self.num_steps = StringVar(self)
+		self.num_steps_entry = tk.Entry(self, textvariable=self.num_steps)
+		self.num_steps_entry.insert(0, "10")
+		self.num_steps_entry.grid(row=0,column=1)
+
+		self.scale = StringVar(self)
+		self.scale_entry = tk.Entry(self, textvariable=self.scale)
+		self.scale_entry.insert(0, "2")
+		self.scale_entry.grid(row=1,column=1)
+
+	def close_windows(self):
+		self.master.destroy()
+
 
 #Screen that controls the MONIC Framework
 #Currently Implements:

@@ -45,7 +45,7 @@ class Application(tk.Frame):
 
 		self.click_state = StringVar(self)
 		self.click_state.set("Click")
-		self.clickmenu = OptionMenu(self, self.click_state, "Click", "Distribution", "Random", command=self.clickmenu_controller)
+		self.clickmenu = OptionMenu(self, self.click_state, "Click", "Distribution", "Random", "Interpolate", command=self.clickmenu_controller)
 		self.clickmenu.pack(side=LEFT)
 		
 		self.leftButton = tk.Button(self, text='previous',command=self.prev_button)			
@@ -176,6 +176,9 @@ class Application(tk.Frame):
 		if self.__click_state == "Distribution":
 			self.__current_click_window = DistributionScreen(tk.Toplevel(self))
 
+		if self.__click_state == "Interpolate":
+			self.__current_click_window = InterpolationtionScreen(tk.Toplevel(self))			
+
 
 	def on_save_button(self):
 		a = askstring("File name", "Insert the name of the file without extension" )
@@ -214,6 +217,12 @@ class Application(tk.Frame):
 			for i in range(int(self.__current_click_window.size.get())): 
 				datapoints.append(Datapoint([event.x + dx[i] , event.y + dy[i]], 
 											None if self.__current_click_window.label.get() == 'None' else int(self.__current_click_window.label.get())))
+
+			if self.timeline_position == len(timeline):
+				timeline.append(datapoints)
+			else:
+				timeline[self.timeline_position] = datapoints
+
 			self.update_screen()
 
 		elif st == "Click":
@@ -223,6 +232,45 @@ class Application(tk.Frame):
 			datapoints.append(Datapoint([np.random.randint(0,canvas_width),
 				np.random.randint(0,canvas_height)]))
 			self.draw_datapoint(datapoints[-1])
+		elif st == "Interpolate":
+			if len(timeline) > 0:# and self.timeline_position > 0:
+				prev_datapoints = timeline[self.timeline_position]
+				center_x = np.mean([i.position[0] for i in prev_datapoints])
+				center_y = np.mean([i.position[1] for i in prev_datapoints])
+				delta_x, delta_y = event.x - center_x, event.y - center_y
+				#print(center_x, center_y)
+				#print(delta_x, delta_y)
+				#print(event.x, event.y)
+
+				num_steps = int(self.__current_click_window.num_steps.get())
+				newpos = []
+				xspeed = delta_x / num_steps
+				yspeed = delta_y / num_steps
+				#print("Xspeed {}, Yspeed {}".format(xspeed, yspeed))
+				#print("***")
+				
+				to_insert = []
+
+				for step in range(1, num_steps+1):
+					#print("Xoffset{}, Yoffset{}".format(xspeed*step, yspeed*step))
+					xoffset, yoffset = (xspeed * step), (yspeed * step)
+					newdatapoints = []
+					for i in datapoints:
+						_nx = i.position[0] + xoffset + np.random.normal(0, float(self.__current_click_window.scale.get()))
+						_ny = i.position[1] + yoffset + np.random.normal(0, float(self.__current_click_window.scale.get()))
+						newdatapoints.append(Datapoint([_nx, _ny]))
+					timeline.append(newdatapoints)
+				
+				'''for i in to_insert:
+					if self.timeline_position > 0: timeline.insert(self.timeline_position+1, i)
+					else: timeline.append(i)
+					self.timeline_position+=1'''
+
+				self.update_screen()
+			else:
+				self.clickmenu_controller("Distribution")
+				self.click_state.set("Distribution")
+				self.on_mouse_click(event)
 
 
 	def next_button(self):
