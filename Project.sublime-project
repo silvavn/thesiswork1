@@ -1,0 +1,11 @@
+{
+	"build_systems": 
+	[
+	  	{
+		    "name": "Python34TPOT",
+		    "cmd": ["/home/victor/anaconda3/envs/tpot/bin/python", "-u", "myTkinter.py"],
+		    "file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
+		    "selector": "source.python"
+	  	}
+	]
+}

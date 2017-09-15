@@ -1,0 +1,929 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"time",
+				"timestep"
+			],
+			[
+				"get",
+				"gen_clusterid"
+			],
+			[
+				"num",
+				"numsteps"
+			],
+			[
+				"li",
+				"lineh"
+			],
+			[
+				"roll",
+				"rolling_std"
+			],
+			[
+				"bid",
+				"bidprice"
+			],
+			[
+				"calc",
+				"calc_buyprice"
+			],
+			[
+				"sell",
+				"sell_profit"
+			],
+			[
+				"cons",
+				"cons_bp"
+			],
+			[
+				"lin",
+				"line2"
+			],
+			[
+				"obs",
+				"obs_mean"
+			],
+			[
+				"obs_",
+				"obs_mean"
+			],
+			[
+				"_",
+				"_mean"
+			],
+			[
+				"ca",
+				"cancel_bids"
+			],
+			[
+				"da",
+				"day_max"
+			],
+			[
+				"day",
+				"day_max"
+			],
+			[
+				"min",
+				"day_min"
+			],
+			[
+				"str",
+				"strd_bottom"
+			],
+			[
+				"re",
+				"reposition_straddle"
+			],
+			[
+				"on",
+				"on_sell"
+			],
+			[
+				"new",
+				"new_buyprice"
+			],
+			[
+				"cal",
+				"calc_sellprice"
+			],
+			[
+				"c",
+				"cons_sp"
+			],
+			[
+				"strd",
+				"strd_bottom"
+			],
+			[
+				"no",
+				"no_limits"
+			],
+			[
+				"tra",
+				"tracked_prices"
+			],
+			[
+				"buy",
+				"buyvalue"
+			],
+			[
+				"bot",
+				"bot_buy"
+			],
+			[
+				"co",
+				"cons_sp"
+			],
+			[
+				"win",
+				"window_size"
+			],
+			[
+				"upda",
+				"update_line"
+			],
+			[
+				"run",
+				"run_sym"
+			],
+			[
+				"curre",
+				"__current_click_window"
+			],
+			[
+				"to",
+				"to_insert"
+			],
+			[
+				"__c",
+				"__click_state"
+			],
+			[
+				"yo",
+				"Yoffset"
+			],
+			[
+				"x",
+				"xspeed"
+			],
+			[
+				"st",
+				"step"
+			],
+			[
+				"y",
+				"yspeed"
+			],
+			[
+				"de",
+				"delta_x"
+			],
+			[
+				"delt",
+				"delta_y"
+			],
+			[
+				"delta_",
+				"delta_x"
+			],
+			[
+				"cen",
+				"center_y"
+			],
+			[
+				"pre",
+				"prev_datapoints"
+			],
+			[
+				"cli",
+				"clickmenu_controller"
+			],
+			[
+				"val",
+				"value"
+			],
+			[
+				"bes",
+				"bestask"
+			],
+			[
+				"BT",
+				"BTC_locked"
+			],
+			[
+				"inf",
+				"infoBalanceBRL"
+			],
+			[
+				"var",
+				"variables"
+			],
+			[
+				"br",
+				"BRL_locked"
+			],
+			[
+				"in",
+				"infoBalanceBRL"
+			],
+			[
+				"ord",
+				"ord-price"
+			],
+			[
+				"or",
+				"ord-price"
+			],
+			[
+				"fo",
+				"formatter"
+			],
+			[
+				"onOrderBookD",
+				"onOrderBookDeleteThruOrder"
+			],
+			[
+				"row",
+				"row-eq-height"
+			],
+			[
+				"back",
+				"background-color"
+			],
+			[
+				"bac",
+				"background-color"
+			],
+			[
+				"di",
+				"div\tTag"
+			],
+			[
+				"by",
+				"buyprice"
+			],
+			[
+				"cu",
+				"currentidbids"
+			],
+			[
+				"start",
+				"startBlinkTrade"
+			],
+			[
+				"fun",
+				"function"
+			],
+			[
+				"mid",
+				"mid_market"
+			],
+			[
+				"las",
+				"last_mid_market"
+			],
+			[
+				"ce",
+				"ceased_timelines"
+			],
+			[
+				"match_",
+				"match_appears"
+			],
+			[
+				"mat",
+				"match_pairs"
+			],
+			[
+				"box",
+				"boxes"
+			],
+			[
+				"cluster",
+				"cluster_collision"
+			],
+			[
+				"clus",
+				"cluster_collision"
+			],
+			[
+				"x_",
+				"x_max"
+			],
+			[
+				"y_",
+				"y_side"
+			],
+			[
+				"hal",
+				"halfx"
+			],
+			[
+				"ha",
+				"halfy"
+			],
+			[
+				"draw_boun",
+				"draw_boundind_box"
+			],
+			[
+				"la",
+				"labels"
+			],
+			[
+				"__cl",
+				"__clustering_state"
+			],
+			[
+				"cure",
+				"__current_clustering_window"
+			],
+			[
+				"D",
+				"DBSCAN"
+			],
+			[
+				"Image",
+				"ImageGrab"
+			],
+			[
+				"ge",
+				"getter"
+			],
+			[
+				"a",
+				"append"
+			],
+			[
+				"com",
+				"comparisons"
+			],
+			[
+				"ma",
+				"match_disappears"
+			],
+			[
+				"match",
+				"match_disappears"
+			],
+			[
+				"tim",
+				"timestep"
+			],
+			[
+				"for",
+				"format"
+			],
+			[
+				"mac",
+				"match_counts"
+			],
+			[
+				"mo",
+				"monic_config"
+			],
+			[
+				"over",
+				"overlap_table"
+			],
+			[
+				"inte",
+				"inter"
+			],
+			[
+				"cl",
+				"clusters_a"
+			],
+			[
+				"labe",
+				"labels_b"
+			],
+			[
+				"label",
+				"labels_a"
+			],
+			[
+				"train",
+				"training_data"
+			],
+			[
+				"n",
+				"n_jobs"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "Datapoint.py",
+			"settings":
+			{
+				"buffer_size": 959,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "KmeansScreen.py",
+			"settings":
+			{
+				"buffer_size": 5838,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "myTkinter.py",
+			"settings":
+			{
+				"buffer_size": 11343,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "MyUtils.py",
+			"settings":
+			{
+				"buffer_size": 8811,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+		[
+			[
+				[
+					"Packages/Python/Python.sublime-build",
+					""
+				],
+				[
+					"Packages/Python/Python.sublime-build",
+					"Syntax Check"
+				]
+			],
+			[
+				"Packages/Python/Python.sublime-build",
+				""
+			]
+		]
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/home/victor/Desktop/numerai/numerai_training_data.csv",
+		"/home/victor/Desktop/numerai/numerai_tournament_data.csv",
+		"/home/victor/Desktop/numerai/example_predictions.csv",
+		"/home/victor/Desktop/numerai/predictions.csv",
+		"/home/victor/Desktop/pythontradingbot/symfin/simulator.py",
+		"/home/victor/Desktop/pythontradingbot/symfin/test.py",
+		"/home/victor/Desktop/pythontradingbot/symfin/bot.py",
+		"/home/victor/Desktop/pythontradingbot/symfin/main.py",
+		"/home/victor/Desktop/normal_noise.py",
+		"/tmp/mozilla_victor0/Stock+Simulator.py",
+		"/home/victor/Desktop/pythontradingbot/stock_prices.csv",
+		"/home/victor/Desktop/Project/MyUtils.py",
+		"/home/victor/Desktop/Project/Datapoint.py",
+		"/home/victor/Desktop/Project/KmeansScreen.py",
+		"/home/victor/Desktop/Project/myTkinter.py",
+		"/home/victor/Desktop/pythontradingbot/test.py",
+		"/home/victor/Desktop/pythontradingbot/main.py",
+		"/home/victor/Downloads/market-price(1).csv",
+		"/home/victor/Desktop/rafaelbot/Foxbit_Bot/routes.js",
+		"/home/victor/Desktop/rafaelbot/Foxbit_Bot/config.json",
+		"/home/victor/Desktop/rafaelbot/Foxbit_Bot/variables.js",
+		"/home/victor/Desktop/rafaelbot/Foxbit_Bot/package.json",
+		"/home/victor/Desktop/rafaelbot/Foxbit_Bot/index.js",
+		"/home/victor/Desktop/rafaelbot/Foxbit_Bot/static/ws_client.html",
+		"/home/victor/Desktop/rafaelbot/Foxbit_Bot/botcore.py",
+		"/home/victor/Downloads/BCHARTS-BTCEUSD.csv",
+		"/home/victor/Downloads/market-price.csv",
+		"/home/victor/Desktop/numerai/stock_prices.csv",
+		"/home/victor/Desktop/rafaelbot/Foxbit_Bot/static/js/support.js",
+		"/home/victor/Desktop/rafaelbot/Foxbit_Bot/static/js/login.js",
+		"/home/victor/Desktop/angularbot/node_modules/css/bot.css",
+		"/home/victor/Desktop/angularbot/node_modules/index.html",
+		"/home/victor/Desktop/angularbot/quickstart/src/app/app.component.ts",
+		"/home/victor/Desktop/angularbot/node_modules/blinktrade.js",
+		"/home/victor/Desktop/angularbot/public/index.html",
+		"/home/victor/Desktop/angularbot/index.html",
+		"/home/victor/Desktop/angularbot/my-app/src/app/app.component.ts",
+		"/home/victor/Desktop/angularbot/quickstart/src/index.html",
+		"/home/victor/Desktop/Project/victor_test.algo",
+		"/home/victor/Desktop/blinktrade/node_modules/blinktrade/README.md",
+		"/home/victor/Desktop/Project/follow_bitstamp.algo",
+		"/home/victor/Desktop/numerai/github/TensorFlow-Binary-Classifier/main.py",
+		"/home/victor/Desktop/numerai/github/TensorFlow-Binary-Classifier/deepSimple.py",
+		"/home/victor/Desktop/numerai/github/TensorFlow-Binary-Classifier/deepLearningSimple.py",
+		"/home/victor/Desktop/Project/test",
+		"/media/victor/D6D6D1F7D6D1D837/Users/Victor/Desktop/moba sym/myTkinter.py",
+		"/home/victor/Desktop/numerai/example_model.py",
+		"/home/victor/tpot/test.py",
+		"/home/victor/tpot/tpot_mnist_pipeline.py",
+		"/media/victor/D6D6D1F7D6D1D837/Users/Victor/Desktop/moba sym/jopy.py",
+		"/home/victor/Desktop/numerai/predictions_ensemble_1500500362.csv",
+		"/home/victor/.config/sublime-text-3/Packages/User/Python34TPOP.sublime-build",
+		"/home/victor/.config/sublime-text-3/Packages/User/Python27.sublime-build",
+		"/home/victor/Desktop/numerai/data/tsne_2d_100p_poly.npz"
+	],
+	"find":
+	{
+		"height": 40.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"gen_",
+			"k=5",
+			"k=10",
+			"k=17",
+			"k=25",
+			"k=3",
+			">>> ",
+			"k=7",
+			"#PCA()",
+			"v",
+			"50",
+			"bolling",
+			"bot_bu",
+			"sell_",
+			"append",
+			"buy_down",
+			"do_something",
+			"    ",
+			"scale",
+			"Dist",
+			"scale",
+			"timeline",
+			"\\n",
+			"\\t",
+			"    ",
+			"Think",
+			"Thi",
+			"buysell",
+			"</script>",
+			"<script>",
+			"buysell-t",
+			"buysell-",
+			"'5'",
+			"onBalance",
+			"BRL_",
+			"sellor",
+			"buyord",
+			"buyx",
+			"\"));\n",
+			"variables.",
+			"  ",
+			"VerifyChanges",
+			"Think()",
+			"  ",
+			"VerifyChanges()",
+			"variables.ord",
+			"verify",
+			"\\t\\t  ",
+			"\\n  ",
+			"    ",
+			"onOrderBookTradeNew",
+			"request",
+			"Sen",
+			"requestL",
+			"myor",
+			"requestL",
+			"executionReport",
+			"secret",
+			"Donate",
+			"115",
+			"blink",
+			"last",
+			"last_",
+			"onBitStamp",
+			"onBit",
+			"onOrder",
+			"makeThe",
+			"blinktrade",
+			"victortrade.SimpleTestAlgo.create",
+			"startP",
+			"SimpleMarketMarketAlgo",
+			"blinktrade",
+			"detect_",
+			"self",
+			"load",
+			"grid_resy",
+			"grid_resx",
+			"grid",
+			"qt_depth",
+			"split",
+			"loa",
+			"load",
+			"grid",
+			"p[",
+			"get_clusters",
+			"get_cluster",
+			"Randomforestr",
+			"AdaBoostR",
+			"monic_confi",
+			"MonicS",
+			"clusteringmenu",
+			"clustering_config",
+			"clustering_state",
+			"min_bound",
+			"kmeans",
+			"kmeanssc",
+			"distr",
+			"size_entry",
+			"kmeans_config",
+			"__current_click_window",
+			"    ",
+			"match_pairs",
+			"splits",
+			"print",
+			"get_cl",
+			"self.min_bound",
+			"self.",
+			"position"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"k=7",
+			"k=5",
+			"k=10",
+			"k=17",
+			"k=8",
+			"",
+			"k=25",
+			"k=3",
+			"PCA(n_components='mle', svd_solver='full')",
+			"\\t",
+			", ",
+			"    ",
+			"\\t",
+			"",
+			"'4'",
+			"$scope.",
+			"\\t",
+			"",
+			"Think",
+			"\\t",
+			"Think()",
+			"Think",
+			"\\t\\t\\t",
+			"\\n\\t",
+			"\\t\\t",
+			"\\t",
+			"victor",
+			"victortrade",
+			"SimpleTestAlgo",
+			"victortrade",
+			"grid_res_y",
+			"grid_res_x",
+			"p.position[",
+			"\\t",
+			"min_bound",
+			""
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 2,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "Datapoint.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 959,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "KmeansScreen.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5838,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1967,
+								1967
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 512.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "myTkinter.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 11343,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								10071,
+								10071
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 4848.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "MyUtils.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 8811,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2508,
+								2508
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 9.0,
+						"translation.y": 1696.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 26.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 317.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.unsaved_changes":
+	{
+		"height": 118.0
+	},
+	"pinned_build_system": "Packages/User/Python34TPOP.sublime-build",
+	"project": "Project.sublime-project",
+	"replace":
+	{
+		"height": 62.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

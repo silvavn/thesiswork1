@@ -52,6 +52,12 @@ class InterpolationtionScreen(tk.Frame):
 		self.scale_entry.insert(0, "2")
 		self.scale_entry.grid(row=1,column=1)
 
+		self.variation_option = IntVar(self)
+		self.vo_opt1 = tk.Radiobutton(self, text="Noise", variable=self.variation_option, value=1)
+		self.vo_opt2 = tk.Radiobutton(self, text="New Cluster", variable=self.variation_option, value=2)
+		self.vo_opt1.grid(row=2, column=0)
+		self.vo_opt2.grid(row=2, column=1)
+
 	def close_windows(self):
 		self.master.destroy()
 

@@ -5,7 +5,6 @@ List of regions in this file:
 	OVERLAPS
 	SHAPES
 '''
-
 import numpy as np
 import pickle
 
@@ -35,6 +34,10 @@ timeline = []
 
 #array of datapoints
 datapoints = []
+
+#dictionary of ids
+ids = {}
+
 #ENDREGION VARIABLES
 
 #Gets -
@@ -48,6 +51,19 @@ def scan_timeline():
 		all_overlaps.append(get_matches(timeline[i], timeline[i + 1]))
 
 	return all_overlaps
+
+
+def gen_clusterid(t, cid):
+	#print(type(t).__name__, t, type(cid).__name__, cid)
+	if "int" in type(cid).__name__: return chr(cid + 65)+ str(t)
+	else:
+		name = lambda t, c: str(chr(c + 65)) + str(t)
+		res = []
+		for i in cid: 
+			#print(name(t, i)
+			res.append(name(t, i))
+		return res
+
 
 #Gets a filename and an array
 #Saves the given array to a file using pickle in binary.
@@ -66,6 +82,7 @@ def get_target_cluster(cluster, labels, target):
 	xpos = [cluster[j].position[0] for j in range(len(labels)) if labels[j] == target]
 	ypos = [cluster[j].position[1] for j in range(len(labels)) if labels[j] == target]
 	return xpos, ypos
+
 
 #REGION TRANSITIONS
 
@@ -103,32 +120,34 @@ def detect_external_transitions(comparisons, timestep, tmatch, tsplit):
 	#BUG!!!
 	#absorbed is called twice
 	for key, value in match_pairs.items():
-		if len(value) == 1 and len(match_merge[value[0]]) == 1: print("Cluster {} matches with clusters {}".format(key, value))
+		if len(value) == 1 and len(match_merge[value[0]]) == 1: print("Cluster {} matches with clusters {}".format(gen_clusterid(timestep, key), gen_clusterid(timestep + 1, value)))
 		elif len(match_merge[value[0]]) > 1: 
-			print("Clusters {} are absorbed by cluster {}".format(match_merge[value[0]], value))
-			new_timelines.append(value)
+			print("Clusters {} are absorbed by cluster {}".format(gen_clusterid(timestep, match_merge[value[0]]), gen_clusterid(timestep+1, value)))
+			new_timelines.extend(value)
 			ceased_timelines.extend(match_merge[value[0]])
+			break
 
 	for key, value in match_splits.items():
 		if len(value) > 1:
-			print("Cluster {} splits into clusters {}".format(key, value))
+			print("Cluster {} splits into clusters {}".format(gen_clusterid(timestep, key), gen_clusterid(timestep + 1, value)))
 			ceased_timelines.append(key)
 			new_timelines.extend(value)
 
 	for c in comparisons:
 		#print(c[0])
-		if c[0] not in match_pairs and (c[0] not in match_splits or len(match_splits[c[0]]) < 2): # and c[0] not in match_merge:
+		if c[0] not in match_disappears and c[0] not in match_pairs and (c[0] not in match_splits or len(match_splits[c[0]]) < 2): # and c[0] not in match_merge:
 			match_disappears.append(c[0])
 
 	if len(match_disappears) > 0: 
-		print("Clusters {} disappeared :(".format(np.unique(match_disappears)))
+		print("Clusters {} disappeared :(".format(gen_clusterid(timestep, match_disappears)))
 		ceased_timelines.extend(match_disappears)
+	
 	if len(match_appears) > 0: 
-		print("Clusters {} emerged :)".format(np.unique(match_appears)))
+		print("Clusters {} emerged :)".format(match_appears))
 		new_timelines.extend(match_appears)
 
-	print("New timelines: ", np.unique(new_timelines))
-	print("Ceased timelines: ", np.unique(ceased_timelines))
+	print("New timelines: {}".format(gen_clusterid(timestep + 1, new_timelines)))
+	print("Ceased timelines: {}\n".format(gen_clusterid(timestep, ceased_timelines)))
 
 #ENDREGION TRANSITIONS
 
@@ -145,7 +164,7 @@ def min_bound_circle(cluster, labels, target):
 	xavg = np.mean(xpos)
 	yavg = np.mean(ypos)
 
-	radius = np.max([np.linalg.norm(np.array([xavg, yavg])-np.array([xpos[i], ypos[i]])) for i in range(len(xpos))])
+	radius = max([np.linalg.norm(np.array([xavg, yavg])-np.array([xpos[i], ypos[i]])) for i in range(len(xpos))])
 	return [[xavg, yavg], radius]
 
 
@@ -153,7 +172,7 @@ def min_bound_circle(cluster, labels, target):
 #Returns a minimum bounding box for the points that have the target label
 def min_bound_box(cluster, labels, target):
 	xpos, ypos = get_target_cluster(cluster, labels, target)
-	return [np.min(xpos), np.min(ypos), np.max(xpos), np.max(ypos)]
+	return [min(xpos), min(ypos), max(xpos), max(ypos)]
 
 
 #Gets a set of points and a bounding box
