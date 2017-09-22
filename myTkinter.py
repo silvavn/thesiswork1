@@ -78,7 +78,7 @@ class Application(tk.Frame):
 
 		for i in range(len(overlaps)):
 			#print (overlaps[i])
-			detect_external_transitions(overlaps[i], i, float(self.monic_config.match.get()), float(self.monic_config.split.get()))
+			detect_external_transitions2(overlaps[i], i, float(self.monic_config.match.get()), float(self.monic_config.split.get()))
 			'''if overlaps[i][2] > self.monic_config.match.get():
 				print("At clusterings {} and {}, clusters {} and {} match!".format(i,i+1, overlaps[i][0], overlaps[i][1]))'''
 

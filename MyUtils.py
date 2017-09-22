@@ -85,6 +85,118 @@ def get_target_cluster(cluster, labels, target):
 
 
 #REGION TRANSITIONS
+def det(comparisons, timestep, tmatch, tsplit):
+	X = [i[0] for i in comparisons]
+	Y = [i[1] for i in comparisons]
+	M = {}
+
+	for c in comparisons:
+		M[c[0], c[1]] = c[2]
+	
+	deadlist = []
+	split_list = []
+
+	for x in X:
+		split_candidates = []
+		absorb_survivals
+		
+		survival_cluster = None
+		survival_score = -1
+		for y in Y:
+			m_cell = M[x, y]
+			if m_cell >= tmatch:
+				if m_cell > survival_score:
+					survival_cluster = y
+			elif m_cell >= tsplit:
+				split_candidates.extend(y)
+				split_union.extend(y)
+		
+		if survival_cluster == None or len(split_candidates) < 1:
+			deadlist.extend(x)
+		elif split_candidates > 1:
+			for i in split_candidates:
+				if M[x, i] >= tmatch:
+					split_list.extend(i)
+		else:
+			absorb_survivals.append(x)
+			absorb_survivals.append(survival_cluster)
+
+	for y in Y:
+		pass
+
+
+
+def detect_external_transitions2(comparisons, timestep, tmatch, tsplit):
+	match_pairs = {}
+	match_splits = {}
+	match_merge = {}
+	
+	new_timelines = []
+	ceased_timelines = []
+
+	X = np.unique([i[0] for i in comparisons])
+	Y = np.unique([i[1] for i in comparisons])
+	M = {}
+
+	for c in comparisons:
+		M[c[0], c[1]] = c[2]
+
+	if timestep == 0: print("\n{} compose the initial clustering space.".format(gen_clusterid(timestep, X)))
+	print("\nAt timestep {} to {}".format(timestep, timestep + 1))
+	
+	for x in X:
+		survival_cluster = None
+		survival_score = -1
+		split_sum = 0
+
+		for y in Y:
+			if M [x,y] >= tmatch:
+				try:
+					match_merge[y].append(x)
+				except:
+					match_merge[y] = [x]
+
+				if M[x,y] > survival_score:
+					survival_cluster = y
+			elif M[x,y] >= tsplit:
+				try:
+					match_splits[x].append(y)
+				except:
+					match_splits[x] = [y]
+				split_sum += M[x,y]
+
+		if survival_cluster == None and len(match_splits) == 0:
+			#pass
+			ceased_timelines.append(x)
+		elif split_sum < tmatch and len(match_splits) > 0:
+			ceased_timelines.append(x)
+
+		
+		for key, value in match_splits.items():
+			if len(value) > 1:
+				print("Cluster {} splits into clusters {}".format(gen_clusterid(timestep, key), gen_clusterid(timestep + 1, value)))
+				ceased_timelines.append(key)
+				new_timelines.extend(value)
+	
+	for y in Y:
+		if y in match_merge.keys():
+			if len(match_merge[y]) > 1:
+				print("Clusters {} are absorbed by cluster {}".format(gen_clusterid(timestep, match_merge[y]), gen_clusterid(timestep+1, y)))
+				new_timelines.append(y)
+				ceased_timelines.extend(match_merge[y])
+	for y in Y:
+		if y in match_merge.keys():
+			if len(match_merge[y]) == 1 and match_merge[y][0] not in ceased_timelines:
+				print("Cluster {} survives as cluster {}".format(gen_clusterid(timestep, match_merge[y]), gen_clusterid(timestep + 1, y)))
+
+		if y not in match_pairs and y not in match_splits and y not in match_merge:
+			new_timelines.append(y)
+
+	if len(new_timelines) > 0: print("New timelines: {}".format(gen_clusterid(timestep + 1, np.unique(new_timelines))))
+	if len(ceased_timelines) > 0: print("Ceased timelines: {}".format(gen_clusterid(timestep, np.unique(ceased_timelines))))
+
+	if timestep == len(timeline) - 2:
+		print("\nThe end! All timelines ceased")
 
 def detect_external_transitions(comparisons, timestep, tmatch, tsplit):
 	match_pairs = {}
@@ -94,7 +206,7 @@ def detect_external_transitions(comparisons, timestep, tmatch, tsplit):
 	match_appears = []
 
 	for c in comparisons:
-		if c[2] >= tmatch:
+		if c[2] >= tmatch: #c2 is the monic overlap
 			try:
 				match_pairs[c[0]].append(c[1])
 			except:
@@ -112,7 +224,10 @@ def detect_external_transitions(comparisons, timestep, tmatch, tsplit):
 			except:
 				match_splits[c[0]] = [c[1]]
 
-	print("At timestep {} to {}".format(timestep, timestep+1))
+	if timestep == 0:
+		print("\n{} compose the initial clustering space.\n".format([i[0] for i in comparisons]))
+
+	print("At timestep {} to {}".format(timestep, timestep + 1))
 	
 	new_timelines = []
 	ceased_timelines = []
@@ -120,7 +235,9 @@ def detect_external_transitions(comparisons, timestep, tmatch, tsplit):
 	#BUG!!!
 	#absorbed is called twice
 	for key, value in match_pairs.items():
-		if len(value) == 1 and len(match_merge[value[0]]) == 1: print("Cluster {} matches with clusters {}".format(gen_clusterid(timestep, key), gen_clusterid(timestep + 1, value)))
+		if len(value) == 1 and len(match_merge[value[0]]) == 1: 
+			print("Cluster {} matches with clusters {}".format(gen_clusterid(timestep, key), gen_clusterid(timestep + 1, value)))
+		
 		elif len(match_merge[value[0]]) > 1: 
 			print("Clusters {} are absorbed by cluster {}".format(gen_clusterid(timestep, match_merge[value[0]]), gen_clusterid(timestep+1, value)))
 			new_timelines.extend(value)
@@ -135,6 +252,9 @@ def detect_external_transitions(comparisons, timestep, tmatch, tsplit):
 
 	for c in comparisons:
 		#print(c[0])
+		if c[1] not in match_appears and c[1] not in match_pairs and (c[1] not in match_splits):
+			match_appears.append(c[1])
+
 		if c[0] not in match_disappears and c[0] not in match_pairs and (c[0] not in match_splits or len(match_splits[c[0]]) < 2): # and c[0] not in match_merge:
 			match_disappears.append(c[0])
 
@@ -143,7 +263,7 @@ def detect_external_transitions(comparisons, timestep, tmatch, tsplit):
 		ceased_timelines.extend(match_disappears)
 	
 	if len(match_appears) > 0: 
-		print("Clusters {} emerged :)".format(match_appears))
+		print("Clusters {} emerged :)".format(gen_clusterid(timestep + 1, match_disappears)))
 		new_timelines.extend(match_appears)
 
 	print("New timelines: {}".format(gen_clusterid(timestep + 1, new_timelines)))
